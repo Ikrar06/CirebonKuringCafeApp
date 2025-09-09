@@ -1,0 +1,21 @@
+{
+  "name": "cafe-management-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:owner": "cd apps/owner-dashboard && npm run dev",
+    "dev:employee": "cd apps/employee-portal && npm run dev",
+    "dev:customer": "cd apps/customer-pwa && npm run dev",
+    "dev:flutter": "cd apps/staff-tablet && flutter run",
+    "dev:web": "concurrently \"npm run dev:owner\" \"npm run dev:employee\" \"npm run dev:customer\"",
+    "dev": "npm run dev:web"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
