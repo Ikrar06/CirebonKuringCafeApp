@@ -38,43 +38,43 @@ dist/
 next-env.d.ts
 
 # Flutter/Dart
-apps/staff_tablet/build/
-apps/staff_tablet/.dart_tool/
-apps/staff_tablet/.flutter-plugins
-apps/staff_tablet/.flutter-plugins-dependencies
-apps/staff_tablet/.packages
-apps/staff_tablet/.pub-cache/
-apps/staff_tablet/.pub/
-apps/staff_tablet/pubspec.lock
+apps/staff-tablet/build/
+apps/staff-tablet/.dart_tool/
+apps/staff-tablet/.flutter-plugins
+apps/staff-tablet/.flutter-plugins-dependencies
+apps/staff-tablet/.packages
+apps/staff-tablet/.pub-cache/
+apps/staff-tablet/.pub/
+apps/staff-tablet/pubspec.lock
 *.iml
 *.ipr
 *.iws
 
 # Android specific
-apps/staff_tablet/android/.gradle/
-apps/staff_tablet/android/captures/
-apps/staff_tablet/android/local.properties
-apps/staff_tablet/android/app/debug/
-apps/staff_tablet/android/app/release/
-apps/staff_tablet/android/app/profile/
-apps/staff_tablet/android/.idea/
+apps/staff-tablet/android/.gradle/
+apps/staff-tablet/android/captures/
+apps/staff-tablet/android/local.properties
+apps/staff-tablet/android/app/debug/
+apps/staff-tablet/android/app/release/
+apps/staff-tablet/android/app/profile/
+apps/staff-tablet/android/.idea/
 *.apk
 *.aab
 *.ap_
 *.dex
 
 # iOS specific
-apps/staff_tablet/ios/Pods/
-apps/staff_tablet/ios/.symlinks/
-apps/staff_tablet/ios/Flutter/Flutter.framework
-apps/staff_tablet/ios/Flutter/Flutter.podspec
-apps/staff_tablet/ios/Flutter/Generated.xcconfig
-apps/staff_tablet/ios/Flutter/app.flx
-apps/staff_tablet/ios/Flutter/app.zip
-apps/staff_tablet/ios/Flutter/flutter_assets/
-apps/staff_tablet/ios/Flutter/flutter_export_environment.sh
-apps/staff_tablet/ios/ServiceDefinitions.json
-apps/staff_tablet/ios/Runner/GeneratedPluginRegistrant.*
+apps/staff-tablet/ios/Pods/
+apps/staff-tablet/ios/.symlinks/
+apps/staff-tablet/ios/Flutter/Flutter.framework
+apps/staff-tablet/ios/Flutter/Flutter.podspec
+apps/staff-tablet/ios/Flutter/Generated.xcconfig
+apps/staff-tablet/ios/Flutter/app.flx
+apps/staff-tablet/ios/Flutter/app.zip
+apps/staff-tablet/ios/Flutter/flutter_assets/
+apps/staff-tablet/ios/Flutter/flutter_export_environment.sh
+apps/staff-tablet/ios/ServiceDefinitions.json
+apps/staff-tablet/ios/Runner/GeneratedPluginRegistrant.*
 
 # ================== TESTING ==================
 coverage/

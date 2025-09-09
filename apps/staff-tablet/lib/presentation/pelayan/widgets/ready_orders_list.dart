@@ -1,0 +1,1 @@
+// Ready orders list widget

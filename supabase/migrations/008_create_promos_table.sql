@@ -1,0 +1,1 @@
+-- Create promos table migration

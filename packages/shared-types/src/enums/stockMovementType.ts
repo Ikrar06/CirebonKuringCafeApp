@@ -1,0 +1,1 @@
+// Stock movement type enums

@@ -1,0 +1,1 @@
+-- Create menu tables migration

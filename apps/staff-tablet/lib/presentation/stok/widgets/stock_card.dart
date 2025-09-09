@@ -1,0 +1,1 @@
+// Stock card widget
