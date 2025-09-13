@@ -1,0 +1,1 @@
+// Owner Dashboard - API response type definitions and interfaces

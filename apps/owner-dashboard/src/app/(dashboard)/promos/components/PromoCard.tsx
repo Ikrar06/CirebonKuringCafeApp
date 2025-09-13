@@ -1,0 +1,1 @@
+// Promo card component

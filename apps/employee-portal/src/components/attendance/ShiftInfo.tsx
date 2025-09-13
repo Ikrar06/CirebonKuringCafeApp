@@ -1,0 +1,1 @@
+// Shift info component

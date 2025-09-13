@@ -1,0 +1,1 @@
+// Owner Dashboard - Line chart component for trend visualization

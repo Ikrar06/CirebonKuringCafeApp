@@ -1,0 +1,1 @@
+// Owner Dashboard - Inventory card component for displaying individual inventory items

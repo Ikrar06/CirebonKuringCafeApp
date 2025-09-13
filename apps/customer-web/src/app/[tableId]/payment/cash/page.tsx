@@ -1,0 +1,1 @@
+// Cash payment page

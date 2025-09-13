@@ -1,0 +1,1 @@
+// Bank transfer payment page

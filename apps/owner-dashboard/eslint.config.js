@@ -1,0 +1,1 @@
+// Owner Dashboard - ESLint configuration for code quality

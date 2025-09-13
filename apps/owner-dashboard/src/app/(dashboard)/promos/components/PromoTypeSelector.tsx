@@ -1,0 +1,1 @@
+// Promo type selector component

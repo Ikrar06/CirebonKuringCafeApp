@@ -1,0 +1,1 @@
+// Floating cart button component

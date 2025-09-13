@@ -1,0 +1,1 @@
+// Promo analytics component

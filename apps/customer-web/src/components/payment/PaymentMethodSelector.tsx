@@ -1,0 +1,1 @@
+// Payment method selector component
