@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd apps/customer-web && npm run build",
+  "outputDirectory": "apps/customer-web/.next",
+  "installCommand": "pnpm install",
+  "devCommand": "cd apps/customer-web && npm run dev",
+  "cleanUrls": true,
+  "trailingSlash": false
+}

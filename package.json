@@ -3,19 +3,26 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "packageManager": "pnpm@10.15.1",
   "scripts": {
     "dev:owner": "cd apps/owner-dashboard && npm run dev",
     "dev:employee": "cd apps/employee-portal && npm run dev",
     "dev:customer": "cd apps/customer-web && npm run dev",
     "dev:flutter": "cd apps/staff-tablet && flutter run",
     "dev:web": "concurrently \"npm run dev:owner\" \"npm run dev:employee\" \"npm run dev:customer\"",
-    "dev": "npm run dev:web"
+    "dev": "npm run dev:web",
+    "build": "turbo run build",
+    "build:customer": "cd apps/customer-web && npm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "workspaces": [
+    "apps/*"
+  ],
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "turbo": "^2.5.4"
   }
 }

@@ -10,11 +10,11 @@ const supabase = createClient<Database>(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { transactionId: string } }
+  { params }: { params: Promise<{ transactionId: string }> }
 ) {
   try {
     console.log('=== UPLOAD PAYMENT PROOF API START ===')
-    const transactionId = params.transactionId
+    const { transactionId } = await params
     console.log('Transaction ID:', transactionId)
 
     // Get form data
