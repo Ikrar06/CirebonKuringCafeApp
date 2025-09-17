@@ -1,18 +1,20 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, usePathname } from 'next/navigation'
 import { toast } from 'sonner'
 import { Loader2, Wifi, WifiOff, MapPin, Clock } from 'lucide-react'
+import storage from '@/lib/utils/storage'
 
 // Types
 interface TableData {
   id: string
   table_number: string
-  capacity: number
+  capacity: string
   status: 'available' | 'occupied' | 'reserved' | 'maintenance'
-  qr_code: string
-  location_description?: string
+  qr_code_id: string
+  zone?: string
+  floor?: string
 }
 
 interface TableLayoutProps {
@@ -22,6 +24,7 @@ interface TableLayoutProps {
 export default function TableLayout({ children }: TableLayoutProps) {
   const params = useParams()
   const router = useRouter()
+  const pathname = usePathname()
   const tableId = params.tableId as string
 
   // State management
@@ -78,16 +81,23 @@ export default function TableLayout({ children }: TableLayoutProps) {
   const fetchTableData = async () => {
     try {
       setIsLoading(true)
-      
-      // API call to get table information
-      const response = await fetch(`/api/tables/${tableId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
 
-      if (!response.ok) {
+      // Import API client
+      const { default: apiClient } = await import('@/lib/api/client')
+
+      // Check if tableId is UUID (table ID) or table number
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tableId)
+
+      let response
+      if (isUUID) {
+        // Get table by ID
+        response = await apiClient.getTable(tableId)
+      } else {
+        // Get table by table number
+        response = await apiClient.getTableByNumber(tableId)
+      }
+
+      if (response.error) {
         if (response.status === 404) {
           toast.error('Meja tidak ditemukan')
           router.replace('/')
@@ -96,8 +106,8 @@ export default function TableLayout({ children }: TableLayoutProps) {
         throw new Error('Gagal memuat data meja')
       }
 
-      const data: TableData = await response.json()
-      
+      const data = response.data
+
       // Validate table status
       if (data.status === 'maintenance') {
         toast.error('Meja sedang dalam perbaikan')
@@ -105,15 +115,26 @@ export default function TableLayout({ children }: TableLayoutProps) {
         return
       }
 
-      setTableData(data)
+      const tableData: TableData = {
+        id: data.id,
+        table_number: data.table_number,
+        capacity: data.capacity,
+        status: data.status,
+        qr_code_id: data.qr_code_id,
+        zone: data.zone,
+        floor: data.floor
+      }
+
+      setTableData(tableData)
       setLastUpdated(new Date())
-      
+
       // Store table info in sessionStorage for persistence
       sessionStorage.setItem('currentTable', JSON.stringify({
         id: data.id,
         table_number: data.table_number,
         capacity: data.capacity,
-        location_description: data.location_description,
+        zone: data.zone,
+        floor: data.floor,
       }))
 
     } catch (error) {
@@ -148,6 +169,21 @@ export default function TableLayout({ children }: TableLayoutProps) {
 
     return () => clearInterval(interval)
   }, [tableData, isOnline])
+
+  // Clean up old customer data when app loads
+  useEffect(() => {
+    // Clean up expired cache items and old customer data periodically
+    storage.clearExpiredItems()
+    storage.clearOldCustomerData()
+
+    // Set up periodic cleanup every 10 minutes
+    const cleanupInterval = setInterval(() => {
+      storage.clearExpiredItems()
+      storage.clearOldCustomerData()
+    }, 10 * 60 * 1000) // 10 minutes
+
+    return () => clearInterval(cleanupInterval)
+  }, [])
 
   // Loading state
   if (isLoading) {
@@ -217,10 +253,10 @@ export default function TableLayout({ children }: TableLayoutProps) {
                 </h1>
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <span>Kapasitas {tableData.capacity} orang</span>
-                  {tableData.location_description && (
+                  {(tableData.zone || tableData.floor) && (
                     <>
                       <span>•</span>
-                      <span>{tableData.location_description}</span>
+                      <span>{`${tableData.zone || ''} ${tableData.floor || ''}`.trim()}</span>
                     </>
                   )}
                 </div>
@@ -273,24 +309,28 @@ export default function TableLayout({ children }: TableLayoutProps) {
         {children}
       </main>
 
-      {/* Fixed Bottom Navigation/Cart Summary */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-30">
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-600">
-            <span className="font-medium">Meja {tableData.table_number}</span>
-            <span className="mx-2">•</span>
-            <span>{new Date().toLocaleTimeString('id-ID', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}</span>
-          </div>
-          
-          {/* This will be replaced by cart summary in later batches */}
-          <div className="text-sm text-gray-500">
-            Gulir ke bawah untuk melihat menu
+      {/* Fixed Bottom Navigation/Cart Summary - Hide on checkout and payment pages */}
+      {!pathname.includes('/checkout') && !pathname.includes('/payment') && (
+        <div
+          id="table-footer"
+          className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-30"
+        >
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              <span className="font-medium">Meja {tableData.table_number}</span>
+              <span className="mx-2">•</span>
+              <span>{new Date().toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}</span>
+            </div>
+
+            <div className="text-sm text-gray-500">
+              Gulir ke bawah untuk melihat menu
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* PWA Install Prompt (will be enhanced later) */}
       {typeof window !== 'undefined' && window.matchMedia('(display-mode: browser)').matches && (

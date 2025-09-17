@@ -16,19 +16,33 @@ interface CartItem {
   added_at: string
 }
 
+interface PromoData {
+  code: string
+  name: string
+  description: string
+  discount_type: 'percentage' | 'fixed'
+  discount_value: number
+  discount_amount: number
+  minimum_order: number
+  maximum_discount?: number
+  valid_until: string
+  terms_conditions?: string[]
+}
+
 interface CartStore {
   // State
   items: CartItem[]
   isCartOpen: boolean
   lastActivity: string
   tableId: string | null
-  
-  // Computed values
+  appliedPromo: PromoData | null
+
+  // Computed values (deprecated - use selectors instead)
   totalItems: number
   totalAmount: number
   totalWeight: number // for delivery calculations
   estimatedPrepTime: number
-  
+
   // Actions
   addItem: (item: Omit<CartItem, 'added_at'>) => void
   updateQuantity: (itemId: string, customizations: Record<string, string[]>, quantity: number) => void
@@ -36,17 +50,24 @@ interface CartStore {
   clearCart: () => void
   setIsCartOpen: (isOpen: boolean) => void
   setTableId: (tableId: string) => void
-  
+
+  // Promo actions
+  applyPromo: (promo: PromoData) => void
+  removePromo: () => void
+
   // Utilities
   getItemQuantity: (itemId: string, customizations: Record<string, string[]>) => number
   findCartItem: (itemId: string, customizations: Record<string, string[]>) => CartItem | undefined
   getCartSummary: () => CartSummary
   validateCart: () => CartValidation
-  
+
   // Session management
   updateActivity: () => void
   isSessionValid: () => boolean
   getSessionAge: () => number
+
+  // Real-time sync
+  syncFromStorage: (tableId: string) => void
 }
 
 interface CartSummary {
@@ -102,6 +123,70 @@ const customizationsMatch = (
   })
 }
 
+// Create a function to generate table-specific storage key
+const getStorageKey = (tableId?: string) => {
+  return tableId ? `cart-storage-table-${tableId}` : 'cart-storage-global'
+}
+
+// Custom storage that's table-aware
+const createTableAwareStorage = () => {
+  return {
+    getItem: (name: string) => {
+      // Check if we're in the browser environment
+      if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+        return null
+      }
+
+      // First try to get current table from URL
+      const tableId = window.location.pathname.match(/\/(\d+)/)?.[1]
+
+      const key = tableId ? getStorageKey(tableId) : name
+
+      try {
+        const item = localStorage.getItem(key)
+        return item
+      } catch (error) {
+        console.error('Error getting item from localStorage:', error)
+        return null
+      }
+    },
+    setItem: (name: string, value: string) => {
+      // Check if we're in the browser environment
+      if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+        return
+      }
+
+      // First try to get current table from URL or from the stored state
+      const tableId = window.location.pathname.match(/\/(\d+)/)?.[1]
+
+      const key = tableId ? getStorageKey(tableId) : name
+
+      try {
+        localStorage.setItem(key, value)
+      } catch (error) {
+        console.error('Error setting item in localStorage:', error)
+      }
+    },
+    removeItem: (name: string) => {
+      // Check if we're in the browser environment
+      if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+        return
+      }
+
+      // First try to get current table from URL
+      const tableId = window.location.pathname.match(/\/(\d+)/)?.[1]
+
+      const key = tableId ? getStorageKey(tableId) : name
+
+      try {
+        localStorage.removeItem(key)
+      } catch (error) {
+        console.error('Error removing item from localStorage:', error)
+      }
+    }
+  }
+}
+
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
@@ -110,28 +195,13 @@ export const useCartStore = create<CartStore>()(
       isCartOpen: false,
       lastActivity: new Date().toISOString(),
       tableId: null,
+      appliedPromo: null,
       
-      // Computed values
-      get totalItems() {
-        return get().items.reduce((total, item) => total + item.quantity, 0)
-      },
-      
-      get totalAmount() {
-        return get().items.reduce((total, item) => total + (item.price * item.quantity), 0)
-      },
-      
-      get totalWeight() {
-        // Placeholder - in real app this would be based on actual item weights
-        return get().items.reduce((total, item) => total + (item.quantity * 0.5), 0)
-      },
-      
-      get estimatedPrepTime() {
-        const items = get().items
-        if (items.length === 0) return 0
-        
-        // Return the maximum preparation time among all items
-        return Math.max(...items.map(item => item.preparation_time))
-      },
+      // Computed values (deprecated - computed dynamically via selectors)
+      totalItems: 0,
+      totalAmount: 0,
+      totalWeight: 0,
+      estimatedPrepTime: 0,
       
       // Actions
       addItem: (item) => {
@@ -150,7 +220,8 @@ export const useCartStore = create<CartStore>()(
         }
         
         // Check maximum items limit
-        if (state.totalItems >= MAX_TOTAL_ITEMS) {
+        const currentTotal = state.items.reduce((total, item) => total + item.quantity, 0)
+        if (currentTotal >= MAX_TOTAL_ITEMS) {
           toast.error(`Maksimal ${MAX_TOTAL_ITEMS} item per pesanan`)
           return
         }
@@ -233,8 +304,8 @@ export const useCartStore = create<CartStore>()(
           isCartOpen: false,
           lastActivity: new Date().toISOString()
         })
-        
-        toast.info('Keranjang dikosongkan')
+
+        // Removed notification - no need to notify user when cart is cleared after payment
       },
       
       setIsCartOpen: (isOpen) => {
@@ -246,17 +317,71 @@ export const useCartStore = create<CartStore>()(
       
       setTableId: (tableId) => {
         const state = get()
-        
-        // If changing table and cart has items, ask for confirmation
-        if (state.tableId && state.tableId !== tableId && state.items.length > 0) {
-          // In a real app, you'd show a confirmation dialog
-          console.warn('Changing table with items in cart')
+
+        // If changing table, clear current cart and load cart for new table
+        if (state.tableId && state.tableId !== tableId) {
+
+          // Clear current state first
+          set({
+            items: [],
+            isCartOpen: false,
+            tableId,
+            lastActivity: new Date().toISOString(),
+            appliedPromo: null
+          })
+
+          // Try to load existing cart for the new table
+          try {
+            const existingCartKey = `cart-storage-table-${tableId}`
+            const existingCart = localStorage.getItem(existingCartKey)
+            if (existingCart) {
+              const parsed = JSON.parse(existingCart)
+              if (parsed.state && parsed.state.items) {
+                set({
+                  items: parsed.state.items,
+                  appliedPromo: parsed.state.appliedPromo || null,
+                  lastActivity: new Date().toISOString()
+                })
+              }
+            }
+          } catch (error) {
+            console.error('Error loading existing cart:', error)
+          }
+        } else {
+          set({
+            tableId,
+            lastActivity: new Date().toISOString()
+          })
         }
-        
-        set({ 
-          tableId,
+      },
+
+      // Promo actions
+      applyPromo: (promo) => {
+        set({
+          appliedPromo: promo,
           lastActivity: new Date().toISOString()
         })
+
+        // Save to localStorage as well
+        try {
+          localStorage.setItem('applied-promo', JSON.stringify(promo))
+        } catch (error) {
+          console.error('Error saving promo to localStorage:', error)
+        }
+      },
+
+      removePromo: () => {
+        set({
+          appliedPromo: null,
+          lastActivity: new Date().toISOString()
+        })
+
+        // Remove from localStorage
+        try {
+          localStorage.removeItem('applied-promo')
+        } catch (error) {
+          console.error('Error removing promo from localStorage:', error)
+        }
       },
       
       // Utilities
@@ -274,20 +399,22 @@ export const useCartStore = create<CartStore>()(
       
       getCartSummary: () => {
         const state = get()
-        const subtotal = state.totalAmount
+        const subtotal = state.items.reduce((total, item) => total + (item.price * item.quantity), 0)
         const tax = Math.round(subtotal * TAX_RATE)
         const service_fee = Math.round(subtotal * SERVICE_FEE_RATE)
-        const discount = 0 // TODO: Add promo code support for discounts
-        const total = subtotal + tax + service_fee - discount
-        
+        const discount = state.appliedPromo?.discount_amount || 0
+        const total = Math.max(0, subtotal + tax + service_fee - discount)
+        const item_count = state.items.reduce((total, item) => total + item.quantity, 0)
+        const estimated_time = state.items.length > 0 ? Math.max(...state.items.map(item => item.preparation_time)) : 0
+
         return {
           subtotal,
           tax,
           service_fee,
           discount,
           total,
-          item_count: state.totalItems,
-          estimated_time: state.estimatedPrepTime
+          item_count,
+          estimated_time
         }
       },
       
@@ -312,7 +439,8 @@ export const useCartStore = create<CartStore>()(
         }
         
         // Check item limits
-        if (state.totalItems > MAX_TOTAL_ITEMS) {
+        const totalItems = state.items.reduce((total, item) => total + item.quantity, 0)
+        if (totalItems > MAX_TOTAL_ITEMS) {
           errors.push(`Terlalu banyak item (maksimal ${MAX_TOTAL_ITEMS})`)
         }
         
@@ -324,7 +452,8 @@ export const useCartStore = create<CartStore>()(
         })
         
         // Check preparation time
-        if (state.estimatedPrepTime > 60) {
+        const estimatedPrepTime = state.items.length > 0 ? Math.max(...state.items.map(item => item.preparation_time)) : 0
+        if (estimatedPrepTime > 60) {
           warnings.push('Waktu persiapan lebih dari 1 jam')
         }
         
@@ -363,19 +492,40 @@ export const useCartStore = create<CartStore>()(
         const state = get()
         const lastActivity = new Date(state.lastActivity)
         const now = new Date()
-        
+
         return now.getTime() - lastActivity.getTime()
+      },
+
+      // Real-time sync methods
+      syncFromStorage: (tableId: string) => {
+        try {
+          const storageKey = `cart-storage-table-${tableId}`
+          const stored = localStorage.getItem(storageKey)
+          if (stored) {
+            const parsed = JSON.parse(stored)
+            if (parsed.state) {
+              set({
+                items: parsed.state.items || [],
+                appliedPromo: parsed.state.appliedPromo || null,
+                lastActivity: parsed.state.lastActivity || new Date().toISOString()
+              })
+            }
+          }
+        } catch (error) {
+          console.error('Error syncing from storage:', error)
+        }
       }
     }),
     {
       name: 'cart-storage',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => createTableAwareStorage()),
       
       // Only persist certain fields
       partialize: (state) => ({
         items: state.items,
         tableId: state.tableId,
-        lastActivity: state.lastActivity
+        lastActivity: state.lastActivity,
+        appliedPromo: state.appliedPromo
       }),
       
       // Rehydration callback
@@ -431,13 +581,18 @@ const getInitialState = () => ({
 
 // Custom hooks for specific cart operations
 export const useCartSummary = () => {
+  const items = useCartStore(state => state.items)
   const store = useCartStore()
+  const totalItems = items.reduce((total, item) => total + item.quantity, 0)
+  const totalAmount = items.reduce((total, item) => total + (item.price * item.quantity), 0)
+  const estimatedPrepTime = items.length > 0 ? Math.max(...items.map(item => item.preparation_time)) : 0
+
   return {
     summary: store.getCartSummary(),
     validation: store.validateCart(),
-    totalItems: store.totalItems,
-    totalAmount: store.totalAmount,
-    estimatedPrepTime: store.estimatedPrepTime
+    totalItems,
+    totalAmount,
+    estimatedPrepTime
   }
 }
 
@@ -478,4 +633,4 @@ export const useCartItem = (itemId: string, customizations: Record<string, strin
 }
 
 // Export types for use in components
-export type { CartItem, CartSummary, CartValidation }
+export type { CartItem, CartSummary, CartValidation, PromoData }

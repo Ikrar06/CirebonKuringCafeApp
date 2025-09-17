@@ -249,9 +249,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
               
               // Prevent text selection on UI elements
               document.addEventListener('selectstart', function(e) {
-                if (e.target.tagName === 'BUTTON' || 
-                    e.target.closest('button') || 
-                    e.target.classList.contains('no-select')) {
+                const target = e.target as HTMLElement;
+                if (target && (
+                    target.tagName === 'BUTTON' ||
+                    target.closest('button') ||
+                    target.classList?.contains('no-select'))) {
                   e.preventDefault();
                 }
               });

@@ -8,6 +8,9 @@ import { toast } from 'sonner'
 // Store
 import { useCartStore } from '@/stores/cartStore'
 
+// Hooks
+import { formatCustomizationsReadable } from '@/hooks/useCustomizations'
+
 // Types
 interface CartItemData {
   id: string
@@ -44,20 +47,7 @@ export default function CartItem({
 
   // Format customizations for display
   const getCustomizationDisplay = () => {
-    if (!item.customizations || Object.keys(item.customizations).length === 0) {
-      return null
-    }
-
-    const customizationText = Object.entries(item.customizations)
-      .filter(([_, options]) => options.length > 0)
-      .map(([customizationId, options]) => {
-        // In a real app, you'd want to map these IDs back to readable names
-        // For now, we'll show the option IDs
-        return options.join(', ')
-      })
-      .join(' • ')
-
-    return customizationText || null
+    return formatCustomizationsReadable(item.customizations)
   }
 
   // Handle quantity update

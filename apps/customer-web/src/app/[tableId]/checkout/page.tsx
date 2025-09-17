@@ -24,6 +24,7 @@ import PromoCode from '@/components/cart/PromoCode'
 import useTable from '@/hooks/useTable'
 import { useCartStore, useCartSummary } from '@/stores/cartStore'
 import apiClient from '@/lib/api/client'
+import storage from '@/lib/utils/storage'
 
 // Types
 interface CustomerInfo {
@@ -45,9 +46,9 @@ export default function CheckoutPage() {
   const tableId = params.tableId as string
 
   // Hooks
-  const { table, isValidSession } = useTable()
-  const { items, totalItems, clearCart } = useCartStore()
-  const { summary, validation } = useCartSummary()
+  const { table, isValidSession, isLoading: tableLoading, initializeTable } = useTable()
+  const { items, clearCart, updateActivity, appliedPromo } = useCartStore()
+  const { summary, validation, totalItems } = useCartSummary()
 
   // State management
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
@@ -64,6 +65,17 @@ export default function CheckoutPage() {
     warnings: []
   })
 
+  // Update activity when checkout page loads
+  useEffect(() => {
+    // Just update activity - don't reinitialize table to avoid conflicts
+    updateActivity()
+
+    // If no table is loaded, then initialize it
+    if (!table && !tableLoading) {
+      initializeTable(tableId)
+    }
+  }, [tableId, table, tableLoading, initializeTable, updateActivity])
+
   // Redirect if no items in cart
   useEffect(() => {
     if (!items.length && !isSubmitting) {
@@ -72,17 +84,22 @@ export default function CheckoutPage() {
     }
   }, [items.length, tableId, router, isSubmitting])
 
-  // Redirect if invalid session
+  // Redirect if invalid session (but wait for loading and give some time)
   useEffect(() => {
-    if (!isValidSession) {
-      toast.error('Sesi tidak valid')
-      router.push(`/${tableId}`)
-    }
-  }, [isValidSession, tableId, router])
+    const timer = setTimeout(() => {
+      if (!tableLoading && !isValidSession && !table) {
+        toast.error('Sesi tidak valid')
+        router.push(`/${tableId}`)
+      }
+    }, 2000) // Give 2 seconds for table to load
 
-  // Load saved customer info
+    return () => clearTimeout(timer)
+  }, [isValidSession, tableLoading, table, tableId, router])
+
+  // Load saved customer info (table-specific)
   useEffect(() => {
-    const savedInfo = localStorage.getItem('customer-info')
+    const customerInfoKey = `customer-info-${tableId}`
+    const savedInfo = localStorage.getItem(customerInfoKey)
     if (savedInfo) {
       try {
         const parsed = JSON.parse(savedInfo)
@@ -91,12 +108,12 @@ export default function CheckoutPage() {
         console.error('Error loading saved customer info:', error)
       }
     }
-  }, [])
+  }, [tableId])
 
   // Validate order on state changes
   useEffect(() => {
     validateOrder()
-  }, [customerInfo, agreedToTerms, validation])
+  }, [customerInfo, agreedToTerms, table, tableLoading])
 
   // Validate order data
   const validateOrder = () => {
@@ -136,8 +153,8 @@ export default function CheckoutPage() {
       errors.push('Minimum pemesanan Rp 10.000')
     }
 
-    // Table validation
-    if (!table) {
+    // Table validation - only fail if not loading and still no table
+    if (!tableLoading && !table) {
       errors.push('Data meja tidak valid')
     }
 
@@ -153,7 +170,7 @@ export default function CheckoutPage() {
     setCustomerInfo(prev => ({ ...prev, [field]: value }))
   }
 
-  // Save customer info to localStorage
+  // Save customer info to localStorage (table-specific)
   const saveCustomerInfo = () => {
     try {
       const infoToSave = {
@@ -161,7 +178,8 @@ export default function CheckoutPage() {
         phone: customerInfo.phone,
         email: customerInfo.email
       }
-      localStorage.setItem('customer-info', JSON.stringify(infoToSave))
+      // Use the new storage method with timestamp
+      storage.saveCustomerInfoForTable(tableId, infoToSave)
     } catch (error) {
       console.error('Error saving customer info:', error)
     }
@@ -180,9 +198,12 @@ export default function CheckoutPage() {
       // Save customer info for future use
       saveCustomerInfo()
 
+      // Use table.id if available from session, otherwise use tableId parameter
+      const actualTableId = table?.id || tableId
+
       // Prepare order data
       const orderData = {
-        table_id: tableId,
+        table_id: actualTableId,
         customer_name: customerInfo.name.trim(),
         customer_phone: customerInfo.phone.replace(/\s+/g, ''),
         customer_email: customerInfo.email?.trim() || undefined,
@@ -197,8 +218,13 @@ export default function CheckoutPage() {
         subtotal: summary.subtotal,
         tax_amount: summary.tax,
         service_fee: summary.service_fee,
-        total_amount: summary.total
+        total_amount: summary.total,
+        // Include promo data if applied
+        promo_code: appliedPromo?.code,
+        discount_amount: appliedPromo?.discount_amount || 0
       }
+
+      console.log('Submitting order with table_id:', actualTableId, 'table data:', table)
 
       // Create order
       const response = await apiClient.createOrder(orderData)
@@ -208,17 +234,53 @@ export default function CheckoutPage() {
       }
 
       if (response.data) {
-        // Store order ID for payment page
-        localStorage.setItem('current-order-id', response.data.order_id)
-        
+        // Debug: Check the actual structure
+        console.log('Raw response.data:', response.data)
+        console.log('response.data type:', typeof response.data)
+        console.log('response.data keys:', Object.keys(response.data))
+
+        // API client returns { data: apiResponse }, and API route returns { data: orderData }
+        // So we need response.data.data (which contains the actual order data)
+        const orderData = response.data.data || response.data
+        console.log('Processed orderData:', orderData)
+
+        // Store order ID for payment page (order_id from POST response)
+        const orderId = orderData?.order_id
+        console.log('Extracted orderId:', orderId)
+
+        if (!orderId) {
+          throw new Error('Order ID tidak valid dalam response')
+        }
+
+        localStorage.setItem('current-order-id', orderId)
+
+        console.log('Order created successfully:', orderData)
+        const paymentUrl = `/${tableId}/payment?order_id=${orderId}`
+        console.log('Navigating to payment page with URL:', paymentUrl)
+        console.log('OrderId for URL:', orderId)
+
         toast.success('Pesanan berhasil dibuat!')
-        
-        // Navigate to payment page
-        router.push(`/${tableId}/payment?order_id=${response.data.order_id}`)
+
+        // Add small delay to ensure toast is shown before navigation
+        setTimeout(() => {
+          console.log('Actually navigating to:', paymentUrl)
+          router.push(paymentUrl)
+        }, 500)
       }
 
     } catch (error: any) {
       console.error('Error creating order:', error)
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        response: error.response
+      })
+
+      // Try to get more detailed error from API response
+      if (error.message?.includes('HTTP 400')) {
+        console.log('400 error detected, check console logs for API response details')
+      }
+
       toast.error(error.message || 'Gagal membuat pesanan')
     } finally {
       setIsSubmitting(false)
@@ -230,7 +292,7 @@ export default function CheckoutPage() {
     router.back()
   }
 
-  if (!table || !items.length) {
+  if (tableLoading || !table || !items.length) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -320,7 +382,7 @@ export default function CheckoutPage() {
                 value={customerInfo.name}
                 onChange={(e) => handleInfoChange('name', e.target.value)}
                 placeholder="Masukkan nama lengkap"
-                className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
                 maxLength={50}
               />
             </div>
@@ -337,7 +399,7 @@ export default function CheckoutPage() {
                   value={customerInfo.phone}
                   onChange={(e) => handleInfoChange('phone', e.target.value)}
                   placeholder="08xxxxxxxxxx"
-                  className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
                   maxLength={15}
                 />
               </div>
@@ -356,7 +418,7 @@ export default function CheckoutPage() {
                 value={customerInfo.email}
                 onChange={(e) => handleInfoChange('email', e.target.value)}
                 placeholder="email@contoh.com"
-                className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
               />
             </div>
 
@@ -373,7 +435,7 @@ export default function CheckoutPage() {
                   placeholder="Tambahkan catatan khusus untuk pesanan Anda..."
                   rows={3}
                   maxLength={200}
-                  className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 placeholder-gray-500 bg-white"
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1">

@@ -37,10 +37,13 @@ export interface CustomizationOption {
 export interface MenuCategory {
   id: string
   name: string
+  slug?: string
   icon: string
   description?: string
   sort_order: number
   color?: string
+  image_url?: string
+  is_active?: boolean
 }
 
 export interface NutritionalInfo {

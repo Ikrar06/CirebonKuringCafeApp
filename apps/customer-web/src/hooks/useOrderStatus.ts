@@ -26,7 +26,7 @@ interface Order {
   status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled'
   total_amount: number
   payment_status: 'pending' | 'paid' | 'failed' | 'refunded'
-  payment_method?: 'cash' | 'card' | 'qris' | 'bank_transfer'
+  payment_method?: 'cash' | 'card' | 'qris' | 'transfer'
   promo_code?: string
   discount_amount?: number
   notes?: string
@@ -95,7 +95,7 @@ export function useOrderStatus(orderId: string): UseOrderStatusReturn {
           const menuItemPromises = itemsData.map(async (item: any) => {
             const { data: menuItem } = await supabase
               .from('menu_items')
-              .select('id, name, image_url, price')
+              .select('id, name, image_url, base_price')
               .eq('id', item.menu_item_id)
               .single()
 
@@ -104,10 +104,15 @@ export function useOrderStatus(orderId: string): UseOrderStatusReturn {
               quantity: item.quantity,
               subtotal: item.subtotal,
               customizations: item.customizations,
-              menu_item: menuItem || {
+              menu_item: menuItem ? {
+                id: menuItem.id,
+                name: menuItem.name,
+                image_url: menuItem.image_url || undefined,
+                price: menuItem.base_price
+              } : {
                 id: item.menu_item_id,
                 name: 'Unknown Item',
-                image_url: null,
+                image_url: undefined,
                 price: 0
               }
             }

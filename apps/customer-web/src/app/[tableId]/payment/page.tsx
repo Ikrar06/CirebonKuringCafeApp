@@ -28,7 +28,7 @@ import apiClient from '@/lib/api/client'
 interface PaymentMethod {
   id: string
   name: string
-  type: 'cash' | 'card' | 'qris' | 'bank_transfer'
+  type: 'cash' | 'card' | 'qris' | 'transfer'
   description: string
   icon: React.ReactNode
   processing_time: string
@@ -42,19 +42,38 @@ interface PaymentMethod {
 
 interface OrderData {
   id: string
+  order_number?: string
   table_id: string
   customer_name: string
   customer_phone?: string
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled'
+  customer_notes?: string
+  status: 'pending_payment' | 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled'
   total_amount: number
-  payment_status: 'pending' | 'paid' | 'failed' | 'refunded'
-  payment_method?: 'cash' | 'card' | 'qris' | 'bank_transfer'
-  promo_code?: string
+  subtotal?: number
+  tax_amount?: number
+  service_charge?: number
   discount_amount?: number
-  notes?: string
-  estimated_completion?: string
+  payment_status: 'pending' | 'paid' | 'failed' | 'refunded'
+  payment_method?: 'cash' | 'card' | 'qris' | 'transfer'
+  promo_code?: string
   created_at: string
-  updated_at: string
+  confirmed_at?: string
+  preparing_at?: string
+  ready_at?: string
+  completed_at?: string
+  cancelled_at?: string
+  // Relations from Supabase query
+  tables?: {
+    id: string
+    table_number: string
+  }
+  order_items?: Array<{
+    id: string
+    item_name: string
+    quantity: number
+    item_price: number
+    subtotal: number
+  }>
 }
 
 interface PaymentData {
@@ -74,14 +93,46 @@ export default function PaymentPage() {
   const tableId = params.tableId as string
   const orderId = searchParams.get('order_id')
 
+  console.log('Payment page - tableId:', tableId, 'orderId:', orderId, 'searchParams:', Object.fromEntries(searchParams.entries()))
+
   // Helper functions
-  const generateOrderNumber = (orderId: string) => {
-    // Generate a user-friendly order number from ID
-    return orderId.slice(-8).toUpperCase()
+  const generateOrderNumber = (orderData: OrderData | null) => {
+    // Use order_number if available, otherwise generate from ID
+    if (orderData?.order_number) {
+      return orderData.order_number
+    }
+    if (orderData?.id) {
+      return orderData.id.slice(-8).toUpperCase()
+    }
+    return '--------'
   }
 
-  const getTableNumber = (tableData: any) => {
-    return table?.table_number || tableId
+  const getTableNumber = (orderData: OrderData | null, tableData: any) => {
+    // Try to get table number from order data relations, then from table hook, finally from tableId
+    if (orderData && (orderData as any).tables?.table_number) {
+      return (orderData as any).tables.table_number
+    }
+    return tableData?.table_number || tableId
+  }
+
+  const getOrderTotal = (orderData: OrderData | null) => {
+    if (!orderData) return 0
+
+    const data = orderData as any
+    // Use total_amount from database which should already include discount calculation
+    // If not available, calculate manually
+    if (data.total_amount) {
+      return Number(data.total_amount)
+    }
+
+    // Fallback calculation including discount
+    const subtotal = Number(data.subtotal || 0)
+    const tax = Number(data.tax_amount || 0)
+    const serviceCharge = Number(data.service_charge || 0)
+    const discount = Number(data.discount_amount || 0)
+
+    const total = subtotal + tax + serviceCharge - discount
+    return Math.max(0, total) // Ensure non-negative
   }
 
   // Hooks
@@ -113,9 +164,9 @@ export default function PaymentPage() {
       ]
     },
     {
-      id: 'bank_transfer',
+      id: 'transfer',
       name: 'Transfer Bank',
-      type: 'bank_transfer',
+      type: 'transfer',
       description: 'Transfer ke rekening bank cafe',
       icon: <University className="h-6 w-6" />,
       processing_time: '1-5 menit',
@@ -170,13 +221,9 @@ export default function PaymentPage() {
     loadOrderData()
   }, [orderId, tableId, router])
 
-  // Redirect if invalid session
-  useEffect(() => {
-    if (!isValidSession) {
-      toast.error('Sesi tidak valid')
-      router.push(`/${tableId}`)
-    }
-  }, [isValidSession, tableId, router])
+  // Session validation removed for payment page - payment should work with valid order ID
+  // The order creation flow already validates the session, so if we have a valid order,
+  // payment should proceed regardless of current session state
 
   // Load order data
   const loadOrderData = async () => {
@@ -184,20 +231,61 @@ export default function PaymentPage() {
       setIsLoading(true)
       setError(null)
 
-      const response = await apiClient.getOrder(orderId!)
-      
+      if (!orderId) {
+        throw new Error('Order ID tidak valid')
+      }
+
+      console.log('Loading order data for orderId:', orderId)
+      const response = await apiClient.getOrder(orderId)
+
+      console.log('Order API response:', response)
+      console.log('Response status:', response.status)
+      console.log('Response error:', response.error)
+
+      // Handle different response structures
       if (response.error) {
-        throw new Error(response.error.message)
+        const errorMsg = response.error.message || 'Gagal memuat data pesanan'
+        console.error('API Error:', response.error)
+
+        // If order not found, redirect to table page
+        if (response.status === 404) {
+          toast.error('Pesanan tidak ditemukan. Membuat pesanan baru...')
+          router.push(`/${tableId}`)
+          return
+        }
+
+        throw new Error(errorMsg)
       }
 
       if (response.data) {
-        setOrderData(response.data)
+        // API client returns { data: apiRouteResponse }, API route returns { data: order }
+        // So response.data contains { data: order }, we need response.data.data
+        const orderData = (response.data as any).data || response.data
+        console.log('Raw response.data:', response.data)
+        console.log('Processed orderData:', orderData)
+        console.log('Order data fields:', {
+          id: (orderData as any).id,
+          customer_name: (orderData as any).customer_name,
+          order_number: (orderData as any).order_number,
+          total_amount: (orderData as any).total_amount,
+          subtotal: (orderData as any).subtotal,
+          tax_amount: (orderData as any).tax_amount,
+          service_charge: (orderData as any).service_charge,
+          discount_amount: (orderData as any).discount_amount,
+          promo_code: (orderData as any).promo_code,
+          tables: (orderData as any).tablest
+        })
+        console.log('Calculated order total:', getOrderTotal(orderData))
+        setOrderData(orderData)
+      } else {
+        throw new Error('Data pesanan tidak ditemukan')
       }
 
     } catch (error: any) {
       console.error('Error loading order data:', error)
-      setError(error.message || 'Gagal memuat data pesanan')
-      toast.error(error.message || 'Gagal memuat data pesanan')
+      const errorMessage = error.message || 'Gagal memuat data pesanan'
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -241,14 +329,14 @@ export default function PaymentPage() {
       }
 
       if (response.data) {
-        // Clear cart since order is created
-        clearCart()
-        
-        // Navigate to payment confirmation page
-        const paymentResult: PaymentData = response.data
+        // API returns { data: paymentData }, handle both structures
+        const paymentResult: PaymentData = (response.data as any).data || response.data
         localStorage.setItem('payment-data', JSON.stringify(paymentResult))
-        
-        router.push(`/${tableId}/payment/confirm?payment_id=${paymentResult.payment_id}&method=${method.type}`)
+
+
+        // DON'T clear cart yet - only clear on successful payment completion
+        const confirmUrl = `/${tableId}/payment/confirm?payment_id=${paymentResult.payment_id}&method=${method.type}`
+        router.push(confirmUrl)
       }
 
     } catch (error: any) {
@@ -261,12 +349,17 @@ export default function PaymentPage() {
 
   // Handle offline payment methods
   const handleOfflinePayment = (method: PaymentMethod) => {
-    // Clear cart since order is created
-    clearCart()
-    
-    // Store method for confirmation page
-    localStorage.setItem('payment-method', JSON.stringify(method))
-    
+    // Store method info (without React components)
+    const methodData = {
+      id: method.id,
+      name: method.name,
+      type: method.type,
+      description: method.description,
+      processing_time: method.processing_time
+    }
+    localStorage.setItem('payment-method', JSON.stringify(methodData))
+
+    // DON'T clear cart yet - only clear on successful payment completion
     // Navigate to offline payment instructions
     router.push(`/${tableId}/payment/offline?order_id=${orderData!.id}&method=${method.type}`)
   }
@@ -279,22 +372,24 @@ export default function PaymentPage() {
   // Get method availability
   const getMethodAvailability = (method: PaymentMethod) => {
     if (!orderData) return { available: false, reason: 'Loading...' }
-    
+
     if (!method.is_available) {
       return { available: false, reason: 'Tidak tersedia' }
     }
 
-    if (method.min_amount && orderData.total_amount < method.min_amount) {
-      return { 
-        available: false, 
-        reason: `Minimum Rp ${method.min_amount.toLocaleString('id-ID')}` 
+    const totalAmount = getOrderTotal(orderData)
+
+    if (method.min_amount && totalAmount < method.min_amount) {
+      return {
+        available: false,
+        reason: `Minimum Rp ${method.min_amount.toLocaleString('id-ID')}`
       }
     }
 
-    if (method.max_amount && orderData.total_amount > method.max_amount) {
-      return { 
-        available: false, 
-        reason: `Maksimum Rp ${method.max_amount.toLocaleString('id-ID')}` 
+    if (method.max_amount && totalAmount > method.max_amount) {
+      return {
+        available: false,
+        reason: `Maksimum Rp ${method.max_amount.toLocaleString('id-ID')}`
       }
     }
 
@@ -334,7 +429,7 @@ export default function PaymentPage() {
                 Pilih Metode Pembayaran
               </h1>
               <p className="text-sm text-gray-600">
-                Order #{generateOrderNumber(orderData.id)} • Meja {getTableNumber(table)}
+                Order #{generateOrderNumber(orderData)} • Meja {getTableNumber(orderData, table)}
               </p>
             </div>
           </div>
@@ -350,21 +445,21 @@ export default function PaymentPage() {
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-600">Nama Pemesan</span>
-              <span className="font-medium text-gray-900">{orderData.customer_name}</span>
+              <span className="font-medium text-gray-900">{orderData?.customer_name || '-'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Nomor Pesanan</span>
-              <span className="font-medium text-gray-900">#{generateOrderNumber(orderData.id)}</span>
+              <span className="font-medium text-gray-900">#{generateOrderNumber(orderData)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Meja</span>
-              <span className="font-medium text-gray-900">{getTableNumber(table)}</span>
+              <span className="font-medium text-gray-900">{getTableNumber(orderData, table)}</span>
             </div>
             <div className="border-t border-gray-200 pt-2 mt-3">
               <div className="flex justify-between">
                 <span className="text-lg font-bold text-gray-900">Total Pembayaran</span>
                 <span className="text-lg font-bold text-gray-900">
-                  Rp {orderData.total_amount.toLocaleString('id-ID')}
+                  Rp {getOrderTotal(orderData).toLocaleString('id-ID')}
                 </span>
               </div>
             </div>
@@ -516,7 +611,7 @@ export default function PaymentPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between text-lg font-bold text-gray-900">
             <span>Total Pembayaran</span>
-            <span>Rp {orderData.total_amount.toLocaleString('id-ID')}</span>
+            <span>Rp {getOrderTotal(orderData).toLocaleString('id-ID')}</span>
           </div>
           
           <button

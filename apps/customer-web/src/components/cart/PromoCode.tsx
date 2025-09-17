@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import apiClient from '@/lib/api/client'
+import { useCartStore, type PromoData } from '@/stores/cartStore'
 
 // Types
 interface PromoCodeProps {
@@ -57,15 +58,17 @@ interface AvailablePromo {
   is_trending?: boolean
 }
 
-export default function PromoCode({ 
-  orderTotal, 
-  onPromoApplied, 
+export default function PromoCode({
+  orderTotal,
+  onPromoApplied,
   onPromoRemoved,
-  className = '' 
+  className = ''
 }: PromoCodeProps) {
+  // Cart store
+  const { appliedPromo, applyPromo, removePromo } = useCartStore()
+
   // State management
   const [promoCode, setPromoCode] = useState('')
-  const [appliedPromo, setAppliedPromo] = useState<PromoData | null>(null)
   const [isValidating, setIsValidating] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [availablePromos, setAvailablePromos] = useState<AvailablePromo[]>([])
@@ -76,62 +79,138 @@ export default function PromoCode({
     loadAvailablePromos()
   }, [orderTotal])
 
-  // Load saved promo code
-  useEffect(() => {
-    const savedPromo = localStorage.getItem('applied-promo')
-    if (savedPromo) {
-      try {
-        const parsed = JSON.parse(savedPromo)
-        setAppliedPromo(parsed)
-        onPromoApplied(parsed.discount_amount, parsed)
-      } catch (error) {
-        console.error('Error loading saved promo:', error)
-        localStorage.removeItem('applied-promo')
-      }
-    }
-  }, [onPromoApplied])
+  // Note: Saved promo loading is now handled automatically by the cart store persistence
 
-  // Mock available promos (in real app, this would come from API)
+  // Load available promos from database
   const loadAvailablePromos = async () => {
     try {
-      // Mock data - replace with actual API call
-      const mockPromos: AvailablePromo[] = [
-        {
-          code: 'WELCOME10',
-          name: 'Selamat Datang',
-          description: 'Diskon 10% untuk pelanggan baru',
-          discount_type: 'percentage',
-          discount_value: 10,
-          minimum_order: 0,
-          is_trending: true
-        },
-        {
-          code: 'HEMAT25',
-          name: 'Hemat Istimewa',
-          description: 'Diskon Rp 25.000 min. pembelian Rp 100.000',
-          discount_type: 'fixed',
-          discount_value: 25000,
-          minimum_order: 100000
-        },
-        {
-          code: 'MAKAN15',
-          name: 'Makan Hemat',
-          description: 'Diskon 15% min. pembelian Rp 50.000',
-          discount_type: 'percentage',
-          discount_value: 15,
-          minimum_order: 50000
-        }
-      ]
+      // Get promos from Supabase database
+      const response = await apiClient.getPromos()
 
-      // Filter promos that are applicable for current order total
-      const applicable = mockPromos.filter(promo => orderTotal >= promo.minimum_order)
-      setAvailablePromos(applicable)
+      console.log('Promo API response:', response)
+
+      if (response.error) {
+        console.error('Error loading promos:', response.error)
+        setAvailablePromos([])
+        return
+      }
+
+      // Handle different response structures
+      let promos = response.data.data || response.data || []
+
+      // Debug response structure
+      console.log('Promos data:', promos)
+      console.log('Promos type:', typeof promos)
+      console.log('Is array:', Array.isArray(promos))
+
+      // Ensure promos is an array
+      if (!Array.isArray(promos)) {
+        console.warn('Promos is not an array, setting empty array')
+        setAvailablePromos([])
+        return
+      }
+
+      // Convert database promos to component format
+      const availablePromos: AvailablePromo[] = promos
+        .filter(promo => promo.is_active && orderTotal >= (promo.min_purchase_amount || 0))
+        .map(promo => ({
+          code: promo.code,
+          name: promo.name,
+          description: promo.description,
+          discount_type: promo.promo_type === 'percentage' ? 'percentage' : 'fixed',
+          discount_value: Number(promo.discount_value),
+          minimum_order: Number(promo.min_purchase_amount || 0),
+          is_trending: false // You can add logic for trending promos
+        }))
+
+      console.log('Processed available promos:', availablePromos)
+      setAvailablePromos(availablePromos)
     } catch (error) {
       console.error('Error loading available promos:', error)
+      setAvailablePromos([])
     }
   }
 
-  // Validate promo code
+  // Local mock promo validation (fallback)
+  const validatePromoCodeLocal = (code: string): PromoValidationResponse | null => {
+    const mockPromos: Record<string, any> = {
+      'WELCOME10': {
+        code: 'WELCOME10',
+        name: 'Selamat Datang',
+        description: 'Diskon 10% untuk pelanggan baru',
+        discount_type: 'percentage',
+        discount_value: 10,
+        minimum_order: 0,
+        maximum_discount: 50000,
+        terms_conditions: ['Berlaku untuk pemesanan pertama', 'Tidak dapat digabung dengan promo lain']
+      },
+      'HEMAT25': {
+        code: 'HEMAT25',
+        name: 'Hemat Istimewa',
+        description: 'Diskon Rp 25.000 min. pembelian Rp 100.000',
+        discount_type: 'fixed',
+        discount_value: 25000,
+        minimum_order: 100000,
+        terms_conditions: ['Minimum pembelian Rp 100.000', 'Berlaku untuk semua menu']
+      },
+      'MAKAN15': {
+        code: 'MAKAN15',
+        name: 'Makan Hemat',
+        description: 'Diskon 15% min. pembelian Rp 50.000',
+        discount_type: 'percentage',
+        discount_value: 15,
+        minimum_order: 50000,
+        maximum_discount: 75000,
+        terms_conditions: ['Minimum pembelian Rp 50.000', 'Maksimal diskon Rp 75.000']
+      }
+    }
+
+    const promo = mockPromos[code]
+    if (!promo) {
+      return {
+        valid: false,
+        message: 'Kode promo tidak ditemukan',
+        discount_amount: 0,
+        final_total: orderTotal
+      }
+    }
+
+    if (orderTotal < promo.minimum_order) {
+      return {
+        valid: false,
+        message: `Minimum pemesanan Rp ${promo.minimum_order.toLocaleString('id-ID')}`,
+        discount_amount: 0,
+        final_total: orderTotal
+      }
+    }
+
+    let discount_amount = 0
+    if (promo.discount_type === 'percentage') {
+      discount_amount = Math.round(orderTotal * (promo.discount_value / 100))
+      if (promo.maximum_discount && discount_amount > promo.maximum_discount) {
+        discount_amount = promo.maximum_discount
+      }
+    } else {
+      discount_amount = promo.discount_value
+      if (discount_amount > orderTotal) {
+        discount_amount = orderTotal
+      }
+    }
+
+    return {
+      valid: true,
+      message: `Promo ${promo.name} berhasil diterapkan!`,
+      discount_amount,
+      final_total: Math.max(0, orderTotal - discount_amount),
+      promo_data: {
+        ...promo,
+        discount_amount,
+        valid_until: '2024-12-31T23:59:59.000Z'
+      }
+    }
+  }
+
+  // Validate promo code with database
   const validatePromoCode = async (code: string) => {
     if (!code.trim()) {
       setError('Masukkan kode promo')
@@ -142,39 +221,89 @@ export default function PromoCode({
       setIsValidating(true)
       setError(null)
 
-      const response = await apiClient.validatePromoCode(code.trim().toUpperCase(), orderTotal)
+      const promoCode = code.trim().toUpperCase()
+
+      // Get promo details from database
+      const response = await apiClient.validatePromoCode(promoCode, orderTotal)
 
       if (response.error) {
-        throw new Error(response.error.message)
+        throw new Error(response.error.message || 'Kode promo tidak valid')
       }
 
-      if (response.data) {
-        const validation: PromoValidationResponse = response.data
+      // Handle nested response structure for validation too
+      const actualPromoData = response.data.data || response.data
+      if (!actualPromoData) {
+        throw new Error('Kode promo tidak ditemukan')
+      }
 
-        if (validation.valid && validation.promo_data) {
-          // Apply promo
-          setAppliedPromo(validation.promo_data)
-          onPromoApplied(validation.discount_amount, validation.promo_data)
-          
-          // Save to localStorage
-          localStorage.setItem('applied-promo', JSON.stringify(validation.promo_data))
-          
-          toast.success(
-            `Promo ${validation.promo_data.name} berhasil diterapkan!`,
-            {
-              description: `Hemat Rp ${validation.discount_amount.toLocaleString('id-ID')}`
-            }
-          )
-          
-          setPromoCode('')
-          setShowSuggestions(false)
-        } else {
-          throw new Error(validation.message || 'Kode promo tidak valid')
+      // Debug promo data
+      console.log('Raw promo data received:', response.data)
+      console.log('Actual promo data:', actualPromoData)
+      console.log('Order total:', orderTotal)
+
+      // Calculate discount based on promo type
+      let discount_amount = 0
+      const discountValue = Number(actualPromoData.discount_value)
+
+      console.log('Promo type:', actualPromoData.promo_type)
+      console.log('Discount value:', discountValue)
+
+      if (actualPromoData.promo_type === 'percentage') {
+        discount_amount = Math.round(orderTotal * (discountValue / 100))
+        console.log('Percentage calculation:', orderTotal, '*', discountValue / 100, '=', discount_amount)
+
+        if (actualPromoData.max_discount_amount && discount_amount > Number(actualPromoData.max_discount_amount)) {
+          discount_amount = Number(actualPromoData.max_discount_amount)
+          console.log('Applied max discount cap:', discount_amount)
+        }
+      } else if (actualPromoData.promo_type === 'fixed_amount') {
+        discount_amount = discountValue
+        console.log('Fixed amount discount:', discount_amount)
+
+        if (discount_amount > orderTotal) {
+          discount_amount = orderTotal
+          console.log('Capped to order total:', discount_amount)
         }
       }
+
+      console.log('Final discount amount:', discount_amount)
+
+      // Create promo data for cart store
+      const promoForCart: PromoData = {
+        code: actualPromoData.code,
+        name: actualPromoData.name,
+        description: actualPromoData.description,
+        discount_type: actualPromoData.promo_type === 'percentage' ? 'percentage' : 'fixed',
+        discount_value: discountValue,
+        discount_amount,
+        minimum_order: Number(actualPromoData.min_purchase_amount || 0),
+        maximum_discount: actualPromoData.max_discount_amount ? Number(actualPromoData.max_discount_amount) : undefined,
+        valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+        usage_limit: actualPromoData.max_uses_total ? Number(actualPromoData.max_uses_total) : undefined,
+        usage_count: actualPromoData.current_uses ? Number(actualPromoData.current_uses) : 0,
+        terms_conditions: [
+          actualPromoData.min_purchase_amount ? `Minimum pembelian Rp ${Number(actualPromoData.min_purchase_amount).toLocaleString('id-ID')}` : '',
+          actualPromoData.max_discount_amount ? `Maksimal diskon Rp ${Number(actualPromoData.max_discount_amount).toLocaleString('id-ID')}` : '',
+          'Tidak dapat digabung dengan promo lain'
+        ].filter(Boolean)
+      }
+
+      applyPromo(promoForCart)
+      onPromoApplied?.(discount_amount, promoForCart)
+
+      toast.success(
+        'Promo berhasil diterapkan!',
+        {
+          description: `Hemat Rp ${discount_amount.toLocaleString('id-ID')}`
+        }
+      )
+
+      setPromoCode('')
+      setShowSuggestions(false)
+
     } catch (error: any) {
       console.error('Error validating promo code:', error)
-      setError(error.message || 'Gagal memvalidasi kode promo')
+      setError(error.message || 'Kode promo tidak valid')
       toast.error(error.message || 'Kode promo tidak valid')
     } finally {
       setIsValidating(false)
@@ -182,9 +311,8 @@ export default function PromoCode({
   }
 
   // Remove applied promo
-  const removePromo = () => {
-    setAppliedPromo(null)
-    localStorage.removeItem('applied-promo')
+  const handleRemovePromo = () => {
+    removePromo()
     onPromoRemoved?.()
     toast.info('Promo code dihapus')
   }
@@ -274,7 +402,7 @@ export default function PromoCode({
               </div>
               
               <button
-                onClick={removePromo}
+                onClick={handleRemovePromo}
                 className="p-1 text-green-600 hover:text-green-700 hover:bg-green-100 rounded transition-colors"
                 title="Hapus promo"
               >
@@ -295,15 +423,18 @@ export default function PromoCode({
                   onChange={handleInputChange}
                   placeholder="Masukkan kode promo"
                   className={`
-                    w-full 
-                    px-3 
-                    py-3 
-                    border 
-                    rounded-lg 
-                    focus:ring-2 
-                    focus:ring-blue-500 
-                    focus:border-transparent 
+                    w-full
+                    px-3
+                    py-3
+                    border
+                    rounded-lg
+                    focus:ring-2
+                    focus:ring-blue-500
+                    focus:border-transparent
                     uppercase
+                    text-gray-900
+                    placeholder-gray-500
+                    bg-white
                     ${error ? 'border-red-300' : 'border-gray-200'}
                   `}
                   maxLength={20}

@@ -70,9 +70,9 @@ const STATUS_CONFIG: Record<string, StatusConfig> = {
   },
   confirmed: {
     icon: CheckCircle,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
+    color: 'text-green-600',
+    bgColor: 'bg-green-50',
+    borderColor: 'border-green-200',
     title: 'Pembayaran Dikonfirmasi',
     description: 'Pembayaran berhasil, pesanan akan segera diproses dapur'
   },

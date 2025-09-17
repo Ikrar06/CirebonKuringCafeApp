@@ -12,9 +12,9 @@ type TableStatus = 'available' | 'occupied' | 'reserved' | 'maintenance'
 
 interface TableData extends TableRow {
   location_description?: string
-  capacity: number
+  capacity: string
   status: TableStatus
-  qr_code: string
+  qr_code_id: string
 }
 
 interface TableSession {
@@ -65,11 +65,13 @@ export default function useTable(): UseTableReturn {
   const [isOnline, setIsOnline] = useState(true)
   const [session, setSession] = useState<TableSession | null>(null)
   const [sessionDuration, setSessionDuration] = useState(0)
+  const [hasShownSessionToast, setHasShownSessionToast] = useState(false)
   
   // Refs for cleanup and subscriptions
   const subscriptionRef = useRef<any>(null)
   const sessionTimerRef = useRef<NodeJS.Timeout | null>(null)
   const activityTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const sessionToastShownRef = useRef(false)
 
   // Constants
   const SESSION_TIMEOUT = 30 * 60 * 1000 // 30 minutes
@@ -89,16 +91,17 @@ export default function useTable(): UseTableReturn {
         throw new Error('Invalid table ID')
       }
 
-      // Check for existing session
-      const existingSession = loadSession()
+      // Check for existing session - but don't set session state yet to avoid loops
+      const existingSession = loadSession(tableId)
+      let shouldShowSessionMessage = false
+
       if (existingSession && existingSession.tableId === tableId) {
         // Validate session is not expired
         const timeSinceActivity = Date.now() - existingSession.lastActivity.getTime()
         if (timeSinceActivity < SESSION_TIMEOUT) {
-          setSession(existingSession)
-          toast.success(`Melanjutkan sesi di Meja ${existingSession.tableNumber}`)
+          shouldShowSessionMessage = true
         } else {
-          clearSession()
+          clearSession(tableId)
           toast.info('Sesi sebelumnya telah berakhir')
         }
       }
@@ -127,18 +130,25 @@ export default function useTable(): UseTableReturn {
       // Update table state
       setTable(tableData)
 
-      // Create or update session
+      // Create or update session - use existingSession to avoid dependency on session state
       const newSession: TableSession = {
         tableId: tableData.id,
         tableNumber: tableData.table_number,
-        sessionStarted: session?.sessionStarted || new Date(),
+        sessionStarted: existingSession?.sessionStarted || new Date(),
         lastActivity: new Date(),
-        capacity: tableData.capacity,
-        location: tableData.location_description,
+        capacity: parseInt(tableData.capacity) || 4,
+        location: `${tableData.zone || ''} ${tableData.floor || ''}`.trim(),
       }
 
       setSession(newSession)
       saveSession(newSession)
+
+      // Show session message if needed - do this after setting session
+      // Commented out to avoid annoying popup
+      // if (shouldShowSessionMessage && existingSession && !sessionToastShownRef.current) {
+      //   toast.success(`Melanjutkan sesi di Meja ${existingSession.tableNumber}`)
+      //   sessionToastShownRef.current = true
+      // }
 
       // Start session management
       startSessionTimer()
@@ -154,7 +164,7 @@ export default function useTable(): UseTableReturn {
     } finally {
       setIsLoading(false)
     }
-  }, [session])
+  }, [])
 
   /**
    * Refresh table data
@@ -197,21 +207,25 @@ export default function useTable(): UseTableReturn {
    * Update user activity timestamp
    */
   const updateActivity = useCallback(() => {
-    if (!session) return
+    setSession(prev => {
+      if (!prev) return prev
 
-    const updatedSession = {
-      ...session,
-      lastActivity: new Date(),
-    }
+      const updatedSession = {
+        ...prev,
+        lastActivity: new Date(),
+      }
 
-    setSession(updatedSession)
-    saveSession(updatedSession)
-  }, [session])
+      saveSession(updatedSession)
+      return updatedSession
+    })
+  }, [])
 
   /**
    * End current session
    */
   const endSession = useCallback(() => {
+    const currentTableId = session?.tableId
+
     // Clear timers
     if (sessionTimerRef.current) {
       clearTimeout(sessionTimerRef.current)
@@ -228,13 +242,13 @@ export default function useTable(): UseTableReturn {
       subscriptionRef.current = null
     }
 
-    // Clear session data
+    // Clear session data with table ID
     setSession(null)
     setTable(null)
-    clearSession()
+    clearSession(currentTableId)
 
     toast.info('Sesi berakhir')
-  }, [])
+  }, [session])
 
   /**
    * Start session timeout timer
@@ -246,14 +260,28 @@ export default function useTable(): UseTableReturn {
 
     sessionTimerRef.current = setTimeout(() => {
       toast.warning('Sesi akan berakhir dalam 5 menit karena tidak ada aktivitas')
-      
+
       // Give user 5 more minutes
       sessionTimerRef.current = setTimeout(() => {
-        endSession()
-        router.push('/')
+        // Clear timers first
+        if (sessionTimerRef.current) {
+          clearTimeout(sessionTimerRef.current)
+          sessionTimerRef.current = null
+        }
+        if (activityTimerRef.current) {
+          clearInterval(activityTimerRef.current)
+          activityTimerRef.current = null
+        }
+
+        // Clear session
+        setSession(null)
+        clearSession()
+
+        // Navigate to home - using window instead of router to avoid dependency issue
+        window.location.href = '/'
       }, 5 * 60 * 1000)
     }, SESSION_TIMEOUT - (5 * 60 * 1000))
-  }, [endSession, router])
+  }, [])
 
   /**
    * Start activity update timer
@@ -277,7 +305,6 @@ export default function useTable(): UseTableReturn {
     subscriptionRef.current = apiClient.subscribeToTableUpdates(
       table.id,
       (update) => {
-        console.log('Table update received:', update)
         
         if (update.new) {
           const updatedTable = update.new as TableData
@@ -310,11 +337,12 @@ export default function useTable(): UseTableReturn {
   }, [])
 
   /**
-   * Session storage utilities
+   * Session storage utilities with table-specific keys
    */
   const saveSession = (sessionData: TableSession) => {
     try {
-      localStorage.setItem('table-session', JSON.stringify({
+      const sessionKey = `table-session-${sessionData.tableId}`
+      localStorage.setItem(sessionKey, JSON.stringify({
         ...sessionData,
         sessionStarted: sessionData.sessionStarted.toISOString(),
         lastActivity: sessionData.lastActivity.toISOString(),
@@ -324,8 +352,23 @@ export default function useTable(): UseTableReturn {
     }
   }
 
-  const loadSession = (): TableSession | null => {
+  const loadSession = (tableId?: string): TableSession | null => {
     try {
+      // Try to load specific table session if tableId provided
+      if (tableId) {
+        const sessionKey = `table-session-${tableId}`
+        const stored = localStorage.getItem(sessionKey)
+        if (stored) {
+          const parsed = JSON.parse(stored)
+          return {
+            ...parsed,
+            sessionStarted: new Date(parsed.sessionStarted),
+            lastActivity: new Date(parsed.lastActivity),
+          }
+        }
+      }
+
+      // Fallback to old format for backwards compatibility
       const stored = localStorage.getItem('table-session')
       if (!stored) return null
 
@@ -341,10 +384,19 @@ export default function useTable(): UseTableReturn {
     }
   }
 
-  const clearSession = () => {
+  const clearSession = (tableId?: string) => {
     try {
+      // Clear specific table session
+      if (tableId) {
+        const sessionKey = `table-session-${tableId}`
+        localStorage.removeItem(sessionKey)
+        // Also clear cart data for this table
+        const cartKey = `cart-data-${tableId}`
+        localStorage.removeItem(cartKey)
+      }
+
+      // Also clear old format for backwards compatibility
       localStorage.removeItem('table-session')
-      // Also clear cart data when session ends
       localStorage.removeItem('cart-data')
     } catch (error) {
       console.error('Error clearing session:', error)

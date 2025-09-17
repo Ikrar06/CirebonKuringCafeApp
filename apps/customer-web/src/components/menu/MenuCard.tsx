@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { 
   Plus, 
@@ -17,6 +17,9 @@ import { toast } from 'sonner'
 // Store
 import { useCartStore } from '@/stores/cartStore'
 
+// API
+import apiClient from '@/lib/api/client'
+
 // Types
 import type { MenuItem, MenuCustomization, CustomizationOption } from '@/types/menu'
 
@@ -32,16 +35,48 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
   const [isCustomizing, setIsCustomizing] = useState(false)
   const [selectedCustomizations, setSelectedCustomizations] = useState<Record<string, string[]>>({})
   const [tempQuantity, setTempQuantity] = useState(1)
+  const [dbCustomizations, setDbCustomizations] = useState<MenuCustomization[]>([])
+  const [isLoadingCustomizations, setIsLoadingCustomizations] = useState(false)
+  const [customizationsLoaded, setCustomizationsLoaded] = useState(false)
 
   // Get current quantity in cart
   const currentQuantity = getItemQuantity(item.id, selectedCustomizations)
 
+  // Load customizations from database (lazy loading)
+  const loadCustomizations = useCallback(async () => {
+    if (customizationsLoaded || isLoadingCustomizations) return
+
+    setIsLoadingCustomizations(true)
+    try {
+      const response = await apiClient.getMenuCustomizations(item.id)
+
+      if (!response.error && response.data && Array.isArray(response.data)) {
+        setDbCustomizations(response.data)
+      } else {
+        setDbCustomizations([])
+      }
+    } catch (error) {
+      console.error(`Error loading customizations for ${item.name}:`, error)
+      setDbCustomizations([])
+    } finally {
+      setCustomizationsLoaded(true)
+      setIsLoadingCustomizations(false)
+    }
+  }, [item.id, item.name, customizationsLoaded, isLoadingCustomizations])
+
+  // Load customizations on mount to determine if customize button should be shown
+  useEffect(() => {
+    if (!customizationsLoaded && !isLoadingCustomizations) {
+      loadCustomizations()
+    }
+  }, [loadCustomizations, customizationsLoaded, isLoadingCustomizations])
+
   // Calculate total price with customizations
   const calculateTotalPrice = () => {
-    let totalPrice = item.price
-    
+    let totalPrice = item.price || 0
+
     Object.entries(selectedCustomizations).forEach(([customizationId, optionIds]) => {
-      const customization = item.customizations?.find(c => c.id === customizationId)
+      const customization = dbCustomizations.find(c => c.id === customizationId)
       if (customization) {
         optionIds.forEach(optionId => {
           const option = customization.options.find(o => o.id === optionId)
@@ -51,7 +86,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
         })
       }
     })
-    
+
     return totalPrice
   }
 
@@ -62,9 +97,9 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
     }
 
     // Check if all required customizations are selected
-    const requiredCustomizations = item.customizations?.filter(c => c.required) || []
-    return requiredCustomizations.every(customization => 
-      selectedCustomizations[customization.id] && 
+    const requiredCustomizations = dbCustomizations.filter(c => c.required) || []
+    return requiredCustomizations.every(customization =>
+      selectedCustomizations[customization.id] &&
       selectedCustomizations[customization.id].length > 0
     )
   }
@@ -72,7 +107,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
   // Handle customization change
   const handleCustomizationChange = (customizationId: string, optionId: string, checked: boolean) => {
     setSelectedCustomizations(prev => {
-      const customization = item.customizations?.find(c => c.id === customizationId)
+      const customization = dbCustomizations.find(c => c.id === customizationId)
       if (!customization) return prev
 
       const currentOptions = prev[customizationId] || []
@@ -87,7 +122,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
         // Multiple selection - add/remove
         return {
           ...prev,
-          [customizationId]: checked 
+          [customizationId]: checked
             ? [...currentOptions, optionId]
             : currentOptions.filter(id => id !== optionId)
         }
@@ -126,21 +161,28 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
   }
 
   // Handle quick add (without customizations)
-  const handleQuickAdd = () => {
+  const handleQuickAdd = async () => {
     if (!item.is_available || !item.ingredients_available) {
       toast.error('Menu tidak tersedia saat ini')
       return
     }
 
-    if (item.customizations && item.customizations.length > 0) {
+    // Load customizations first if not already loaded
+    if (!customizationsLoaded) {
+      await loadCustomizations()
+    }
+
+    // If has customizations, open customization modal
+    if (dbCustomizations && dbCustomizations.length > 0) {
       setIsCustomizing(true)
       return
     }
 
+    // Add directly to cart if no customizations
     const cartItem = {
       id: item.id,
       name: item.name,
-      price: item.price,
+      price: item.price || 0,
       image_url: item.image_url,
       quantity: 1,
       customizations: {},
@@ -170,6 +212,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
     if (level === 3) return 'text-orange-500'
     return 'text-red-500'
   }
+
 
   return (
     <>
@@ -284,7 +327,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
               {/* Price and Actions */}
               <div className="flex items-center justify-between mt-3">
                 <div className="text-lg font-bold text-gray-900">
-                  Rp {item.price.toLocaleString('id-ID')}
+                  Rp {(item.price || 0).toLocaleString('id-ID')}
                 </div>
                 
                 {/* Add to cart actions */}
@@ -336,48 +379,72 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
                   ) : (
                     // Add button
                     <div className="flex items-center space-x-2">
-                      {/* Customize button (if has customizations) */}
-                      {item.customizations && item.customizations.length > 0 && (
+                      {/* Customize button - show loading, then show only if has customizations */}
+                      {!customizationsLoaded ? (
+                        // Show loading button while fetching customizations
                         <button
-                          onClick={() => setIsCustomizing(true)}
-                          disabled={!item.is_available || !item.ingredients_available}
+                          disabled
                           className="
-                            px-3 
-                            py-2 
-                            text-sm 
-                            font-medium 
-                            text-blue-600 
-                            border 
-                            border-blue-600 
-                            rounded-lg 
-                            hover:bg-blue-50 
-                            disabled:text-gray-400 
-                            disabled:border-gray-300 
-                            disabled:cursor-not-allowed 
+                            px-3
+                            py-2
+                            text-sm
+                            font-medium
+                            text-gray-400
+                            border
+                            border-gray-300
+                            rounded-lg
+                            cursor-not-allowed
                             transition-colors
                           "
+                          title="Loading customizations..."
                         >
-                          <Settings className="h-4 w-4" />
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
                         </button>
+                      ) : (
+                        // Show customize button only if customizations exist
+                        dbCustomizations && dbCustomizations.length > 0 ? (
+                          <button
+                            onClick={() => setIsCustomizing(true)}
+                            disabled={!item.is_available || !item.ingredients_available}
+                            className="
+                              px-3
+                              py-2
+                              text-sm
+                              font-medium
+                              text-blue-600
+                              border
+                              border-blue-600
+                              rounded-lg
+                              hover:bg-blue-50
+                              disabled:text-gray-400
+                              disabled:border-gray-300
+                              disabled:cursor-not-allowed
+                              transition-colors
+                            "
+                            title="Customize"
+                          >
+                            <Settings className="h-4 w-4" />
+                          </button>
+                        ) : null
                       )}
-                      
+
                       <button
                         onClick={handleQuickAdd}
                         disabled={!item.is_available || !item.ingredients_available}
                         className="
-                          px-4 
-                          py-2 
-                          text-sm 
-                          font-medium 
-                          text-white 
-                          bg-blue-600 
-                          rounded-lg 
-                          hover:bg-blue-700 
-                          disabled:bg-gray-300 
-                          disabled:cursor-not-allowed 
+                          px-4
+                          py-2
+                          text-sm
+                          font-medium
+                          text-white
+                          bg-blue-600
+                          rounded-lg
+                          hover:bg-blue-700
+                          disabled:bg-gray-300
+                          disabled:cursor-not-allowed
                           transition-colors
-                          flex 
-                          items-center 
+                          flex
+                          items-center
                           space-x-1
                         "
                       >
@@ -421,8 +488,8 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
 
       {/* Customization Modal */}
       {isCustomizing && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-end justify-center p-4">
-          <div className="bg-white rounded-t-xl w-full max-w-lg max-h-[80vh] overflow-hidden">
+        <div className="fixed inset-0 z-50 bg-white/20 backdrop-blur-sm flex items-end justify-center p-4">
+          <div className="bg-white rounded-t-xl w-full max-w-lg max-h-[80vh] overflow-hidden shadow-lg">
             {/* Modal Header */}
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
@@ -435,7 +502,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
                     setSelectedCustomizations({})
                     setTempQuantity(1)
                   }}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-200/80 rounded-lg transition-colors text-gray-700 hover:text-gray-900 font-bold"
                 >
                   ✕
                 </button>
@@ -491,7 +558,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
               </div>
 
               {/* Customizations */}
-              {item.customizations?.map((customization) => (
+              {dbCustomizations?.map((customization) => (
                 <div key={customization.id} className="mb-6">
                   <div className="flex items-center space-x-2 mb-3">
                     <h4 className="text-sm font-medium text-gray-900">

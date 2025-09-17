@@ -18,6 +18,9 @@ import {
 // Store and types
 import { useCartStore, type CartItem } from '@/stores/cartStore'
 
+// Hooks
+import { formatCustomizationsReadable } from '@/hooks/useCustomizations'
+
 // Types
 interface CartSummaryProps {
   items?: CartItem[]
@@ -40,16 +43,9 @@ interface TaxBreakdown {
 const TAX_RATE = 0.11 // 11% PPN
 const SERVICE_FEE_RATE = 0.05 // 5% service fee
 
-// Helper function to format customizations
+// Helper function to format customizations (now uses readable names)
 function formatCustomizations(customizations: Record<string, string[]>) {
-  if (!customizations || Object.keys(customizations).length === 0) {
-    return null
-  }
-
-  return Object.entries(customizations)
-    .filter(([_, options]) => options.length > 0)
-    .map(([_, options]) => options.join(', '))
-    .join(' • ')
+  return formatCustomizationsReadable(customizations)
 }
 
 export default function CartSummary({

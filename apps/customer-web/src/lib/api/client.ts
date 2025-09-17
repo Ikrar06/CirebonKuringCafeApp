@@ -199,18 +199,42 @@ class CustomerApiClient {
     const { endpoint, method, data, params, headers = {} } = request
 
     // Build URL with query parameters
-    const url = new URL(endpoint, this.config.baseUrl)
+    let url: URL
+    try {
+      // Handle both absolute and relative URLs
+      if (this.config.baseUrl.startsWith('http')) {
+        url = new URL(endpoint, this.config.baseUrl)
+      } else {
+        // For relative paths, use current origin + baseUrl + endpoint
+        const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+        const fullPath = this.config.baseUrl + endpoint
+        url = new URL(fullPath, origin)
+      }
+    } catch (error) {
+      // Fallback for invalid URLs
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+      const fullPath = this.config.baseUrl + endpoint
+      url = new URL(fullPath, origin)
+    }
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         url.searchParams.append(key, value)
       })
     }
 
-    // Default headers
-    const defaultHeaders = {
-      'Content-Type': 'application/json',
+
+    // Handle FormData vs JSON data
+    const isFormData = data instanceof FormData
+
+    // Default headers (don't set Content-Type for FormData, let browser handle it)
+    const defaultHeaders: Record<string, string> = {
       'Accept': 'application/json',
       ...headers,
+    }
+
+    // Only add Content-Type for non-FormData requests
+    if (!isFormData) {
+      defaultHeaders['Content-Type'] = 'application/json'
     }
 
     let lastError: any = null
@@ -220,24 +244,51 @@ class CustomerApiClient {
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), this.config.timeout)
 
+        // Prepare request body
+        let requestBody: string | FormData | undefined = undefined
+        if (method !== 'GET' && data) {
+          requestBody = isFormData ? data : JSON.stringify(data)
+        }
+
         const response = await fetch(url.toString(), {
           method,
           headers: defaultHeaders,
-          body: method !== 'GET' && data ? JSON.stringify(data) : undefined,
+          body: requestBody,
           signal: controller.signal,
         })
 
         clearTimeout(timeoutId)
 
         let responseData = null
+        const contentType = response.headers.get('content-type')
+
         try {
-          responseData = await response.json()
+          // Clone response to avoid "body stream already read" error
+          const responseClone = response.clone()
+
+          if (contentType && contentType.includes('application/json')) {
+            responseData = await response.json()
+          } else {
+            responseData = await response.text()
+          }
         } catch (e) {
-          // Response might not be JSON
-          responseData = await response.text()
+          // Fallback: try to read as text from the cloned response
+          try {
+            responseData = await response.clone().text()
+          } catch (fallbackError) {
+            console.warn('Failed to parse response:', e, fallbackError)
+            responseData = null
+          }
         }
 
         if (!response.ok) {
+          console.error('API Client Error Details:')
+          console.error('- URL:', url.toString())
+          console.error('- Method:', method)
+          console.error('- Status:', response.status)
+          console.error('- Response Data:', JSON.stringify(responseData, null, 2))
+          console.error('- Headers:', [...response.headers.entries()])
+
           const error: ApiError = {
             message: responseData?.message || `HTTP ${response.status}`,
             code: responseData?.code,
@@ -385,10 +436,33 @@ class CustomerApiClient {
 
   // Table operations
   async getTable(tableId: string) {
-    return this.request<Database['public']['Tables']['tables']['Row']>({
-      endpoint: `/tables/${tableId}`,
-      method: 'GET',
-    })
+    try {
+      const { data, error } = await this.supabase
+        .from('tables')
+        .select('*')
+        .eq('id', tableId)
+        .single()
+
+      if (error) {
+        return {
+          data: null,
+          error: { message: error.message, code: error.code },
+          status: error.code === 'PGRST116' ? 404 : 500
+        }
+      }
+
+      return {
+        data,
+        error: null,
+        status: 200
+      }
+    } catch (error) {
+      return {
+        data: null,
+        error: { message: 'Network error', code: 'NETWORK_ERROR' },
+        status: 500
+      }
+    }
   }
 
   async getTableByNumber(tableNumber: string) {
@@ -430,34 +504,87 @@ class CustomerApiClient {
   }
 
   // Menu operations
-  async getMenu(tableId?: string) {
-    const params = tableId ? { table_id: tableId } : undefined
-    return this.request<Database['public']['Tables']['menu_items']['Row'][]>({
+  async getMenu(tableId?: string, categorySlug?: string) {
+    const params: Record<string, string> = {}
+    if (tableId) params.table_id = tableId
+    if (categorySlug) params.category = categorySlug
+
+    const result = await this.request({
       endpoint: '/menu',
       method: 'GET',
-      params,
+      params
     })
+    return result
   }
 
   async getMenuCategories() {
-    return this.request<Database['public']['Tables']['menu_categories']['Row'][]>({
-      endpoint: '/menu/categories',
-      method: 'GET',
-    })
+    try {
+      const { data, error } = await this.supabase
+        .from('menu_categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order')
+
+      if (error) {
+        return {
+          data: null,
+          error: { message: error.message, code: error.code },
+          status: 500
+        }
+      }
+
+      return {
+        data: data || [],
+        error: null,
+        status: 200
+      }
+    } catch (error) {
+      return {
+        data: null,
+        error: { message: 'Network error', code: 'NETWORK_ERROR' },
+        status: 500
+      }
+    }
   }
 
   async getMenuItem(itemId: string) {
-    return this.request<Database['public']['Tables']['menu_items']['Row']>({
-      endpoint: `/menu/${itemId}`,
-      method: 'GET',
+    const response = await this.request<Database['public']['Tables']['menu_items']['Row'] & { customizations: any[] }>({
+      endpoint: '/menu',
+      method: 'POST',
+      data: { item_id: itemId }
     })
+    return response
   }
 
   async getMenuCustomizations(itemId: string) {
-    return this.request<Database['public']['Tables']['menu_customizations']['Row'][]>({
-      endpoint: `/menu/${itemId}/customizations`,
-      method: 'GET',
-    })
+    try {
+      // Get customizations via the menu API endpoint which already includes them
+      const response = await this.getMenuItem(itemId)
+
+      if (response.error) {
+        console.error('Error in getMenuItem:', response.error)
+        return { data: [], error: response.error }
+      }
+
+      // Handle nested response structures from menu API
+      let itemData = null
+      if (response.data && (response.data as any).data) {
+        // API returns { data: { data: menuItem } }
+        itemData = (response.data as any).data
+      } else if (response.data) {
+        // API returns { data: menuItem }
+        itemData = response.data
+      }
+
+      if (itemData && itemData.customizations && Array.isArray(itemData.customizations)) {
+        return { data: itemData.customizations, error: null }
+      }
+
+      return { data: [], error: null }
+    } catch (error) {
+      console.error('Error in getMenuCustomizations:', error)
+      return { data: [], error: { message: 'Failed to load customizations' } }
+    }
   }
 
   // Order operations
@@ -465,16 +592,23 @@ class CustomerApiClient {
     table_id: string
     customer_name: string
     customer_phone?: string
+    customer_email?: string
     items: Array<{
       menu_item_id: string
       quantity: number
+      unit_price?: number
       customizations?: Record<string, any>
       notes?: string
     }>
+    special_notes?: string
+    subtotal?: number
+    tax_amount?: number
+    service_fee?: number
+    total_amount?: number
     promo_code?: string
   }) {
-    return this.request<{ order_id: string; total_amount: number }>({
-      endpoint: '/orders',
+    return this.request<{ order_id: string; total_amount: number; table_number: string; estimated_completion: string }>({
+      endpoint: '/order',
       method: 'POST',
       data: orderData,
     })
@@ -482,7 +616,7 @@ class CustomerApiClient {
 
   async getOrder(orderId: string) {
     return this.request<Database['public']['Tables']['orders']['Row']>({
-      endpoint: `/orders/${orderId}`,
+      endpoint: `/order?id=${orderId}`,
       method: 'GET',
     })
   }
@@ -505,18 +639,30 @@ class CustomerApiClient {
   // Payment operations
   async createPayment(paymentData: {
     order_id: string
-    method: 'cash' | 'card' | 'qris' | 'bank_transfer'
+    method: 'cash' | 'card' | 'qris' | 'transfer'
     amount: number
     customer_phone?: string
   }) {
-    return this.request<{ 
+    return this.request<{
+      transaction_id: string
       payment_id: string
+      order_id: string
+      amount: number
+      method: string
+      status: string
+      message?: string
+      next_step?: string
       qr_code?: string
-      bank_details?: {
+      merchant_name?: string
+      amount_to_pay?: number
+      formatted_amount?: string
+      instructions?: string[]
+      bank_options?: {
         bank_name: string
         account_number: string
         account_name: string
-      }
+      }[]
+      expires_at?: string
     }>({
       endpoint: '/payments',
       method: 'POST',
@@ -524,17 +670,19 @@ class CustomerApiClient {
     })
   }
 
-  async uploadPaymentProof(paymentId: string, file: File) {
+  async uploadPaymentProof(paymentId: string, file: File, orderId?: string) {
     const formData = new FormData()
-    formData.append('proof', file)
+    formData.append('file', file)
+    formData.append('payment_id', paymentId)
+    if (orderId) {
+      formData.append('order_id', orderId)
+    }
 
     return this.request({
-      endpoint: `/payments/${paymentId}/proof`,
+      endpoint: `/upload/proof`,
       method: 'POST',
       data: formData,
-      headers: {
-        // Don't set Content-Type, let browser set it for FormData
-      },
+      headers: {}, // Empty headers object to ensure no Content-Type is set
     })
   }
 
@@ -551,31 +699,37 @@ class CustomerApiClient {
 
   // Promo operations
   async validatePromoCode(code: string, orderTotal: number) {
-    return this.request<{
-      valid: boolean
-      discount_amount: number
-      discount_percentage?: number
-      final_total: number
-      message?: string
-    }>({
-      endpoint: '/promo/validate',
+    return this.request<any>({
+      endpoint: '/promo',
       method: 'POST',
       data: { code, order_total: orderTotal },
     })
   }
 
   // Rating operations
-  async submitRating(orderData: {
-    order_id: string
+  async submitRating(ratingData: {
+    orderId: string
     rating: number
-    review?: string
-    service_rating?: number
-    food_rating?: number
+    comment?: string
+    aspects?: {
+      food_quality: number
+      service: number
+      cleanliness: number
+      speed: number
+    }
   }) {
     return this.request({
-      endpoint: '/ratings',
+      endpoint: '/rating',
       method: 'POST',
-      data: orderData,
+      data: ratingData,
+    })
+  }
+
+  // Promo operations
+  async getPromos() {
+    return this.request<any[]>({
+      endpoint: '/promo',
+      method: 'GET',
     })
   }
 

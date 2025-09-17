@@ -389,7 +389,6 @@ export default function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
           table: 'menu_items'
         },
         (payload) => {
-          console.log('Menu item update received:', payload)
           
           if (payload.eventType === 'UPDATE') {
             setItems(prev => prev.map(item => 
