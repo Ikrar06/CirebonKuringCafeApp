@@ -1,8 +1,6 @@
 import { NextAuthOptions } from "next-auth"
-import { SupabaseAdapter } from "@next-auth/supabase-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { createClient } from "@supabase/supabase-js"
-import type { Database } from "@/types/user"
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -18,10 +16,6 @@ if (!supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 export const authOptions: NextAuthOptions = {
-  adapter: SupabaseAdapter({
-    url: supabaseUrl,
-    secret: supabaseServiceKey,
-  }),
   providers: [
     CredentialsProvider({
       name: "credentials",
