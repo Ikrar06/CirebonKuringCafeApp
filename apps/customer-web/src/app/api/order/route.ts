@@ -344,12 +344,13 @@ export async function POST(request: NextRequest) {
       console.log('Order totals updated successfully')
     }
 
-    // Update table status to occupied
-    console.log('Updating table status for table:', table.id)
+    // Update table status to occupied with session_id
+    console.log('Updating table status for table:', table.id, 'with session:', sessionId)
     const { error: tableUpdateError } = await supabase
       .from('tables')
       .update({
         status: 'occupied',
+        current_session_id: sessionId,
         occupied_since: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
@@ -357,6 +358,8 @@ export async function POST(request: NextRequest) {
 
     if (tableUpdateError) {
       console.error('Error updating table status:', tableUpdateError)
+    } else {
+      console.log('Table status updated to occupied with session:', sessionId)
     }
 
     // Calculate estimated completion (30 minutes from now)

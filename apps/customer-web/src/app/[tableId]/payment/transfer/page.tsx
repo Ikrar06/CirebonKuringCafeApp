@@ -40,6 +40,12 @@ interface BankTransferPayment {
   status: 'pending' | 'processing' | 'completed' | 'expired' | 'failed'
 }
 
+interface BankAccount {
+  bank: string
+  name: string
+  account: string
+}
+
 export default function BankTransferPaymentPage() {
   const params = useParams()
   const router = useRouter()
@@ -61,6 +67,12 @@ export default function BankTransferPaymentPage() {
   const [paymentProof, setPaymentProof] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'processing' | 'completed' | 'expired' | 'failed'>('pending')
+  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([])
+
+  // Load bank accounts from database
+  useEffect(() => {
+    fetchBankAccounts()
+  }, [])
 
   // Load payment data
   useEffect(() => {
@@ -71,7 +83,7 @@ export default function BankTransferPaymentPage() {
     }
 
     loadPaymentData()
-  }, [orderId, paymentId, tableId, router])
+  }, [orderId, paymentId, tableId, router, bankAccounts])
 
   // Countdown timer
   useEffect(() => {
@@ -103,15 +115,43 @@ export default function BankTransferPaymentPage() {
     return () => clearInterval(interval)
   }, [paymentData?.expires_at])
 
+  // Fetch bank accounts from database
+  const fetchBankAccounts = async () => {
+    try {
+      const response = await fetch('/api/settings?category=payment&key=bank_accounts')
+      const { data } = await response.json()
+
+      if (data && data.length > 0) {
+        const bankAccountsSetting = data[0]
+        setBankAccounts(bankAccountsSetting.value || [])
+      }
+    } catch (error) {
+      console.error('Error fetching bank accounts:', error)
+      // Don't show error to user, just use empty array
+    }
+  }
+
   // Mock payment data for demo
   const loadPaymentData = async () => {
     try {
       setIsLoading(true)
 
+      // Wait for bank accounts to be loaded
+      if (bankAccounts.length === 0) {
+        return
+      }
+
       // Generate unique code
       const uniqueCode = Math.floor(Math.random() * 999) + 1
       const baseAmount = 85000 // This should come from order data
       const uniqueAmount = baseAmount + uniqueCode
+
+      // Use first bank account from database, or fallback to default
+      const selectedBank = bankAccounts[0] || {
+        bank: 'Bank BCA',
+        account: '1234567890',
+        name: 'PT CIREBON KURING CAFE'
+      }
 
       // Mock bank transfer payment data - in real app, this would come from API
       const mockPaymentData: BankTransferPayment = {
@@ -121,9 +161,9 @@ export default function BankTransferPaymentPage() {
         unique_amount: uniqueAmount,
         unique_code: uniqueCode,
         bank_details: {
-          bank_name: 'Bank BCA',
-          account_number: '1234567890',
-          account_name: 'PT CIREBON KURING CAFE'
+          bank_name: selectedBank.bank,
+          account_number: selectedBank.account,
+          account_name: selectedBank.name
         },
         payment_reference: 'TF' + Date.now(),
         expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now

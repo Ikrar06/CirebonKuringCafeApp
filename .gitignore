@@ -185,6 +185,10 @@ supabase/.temp
 supabase/.env
 supabase/functions/*/index.js
 
+# Supabase generated API documentation
+supabase/supabase-api.md
+supabase/supabase-openapi.json
+
 # ================== DATABASE ==================
 *.sqlite
 *.sqlite3
@@ -251,6 +255,16 @@ backup/
 notes.md
 TODO.md
 personal/
+
+# Generated documentation guides (temporary/auto-generated)
+apps/owner-dashboard/AUTO_NOTIFICATIONS_GUIDE.md
+apps/owner-dashboard/NOTIFICATION_QUICK_GUIDE.md
+apps/owner-dashboard/NOTIFICATION_TROUBLESHOOTING.md
+apps/owner-dashboard/NOTIFICATION_USER_GUIDE.md
+apps/owner-dashboard/TELEGRAM_IMPLEMENTATION.md
+
+# Migration scripts (if auto-generated)
+scripts/run-migration.js
 
 # ================== KEEP THESE FILES ==================
 # Configuration templates

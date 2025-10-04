@@ -47,6 +47,12 @@ interface PaymentData {
   expires_at?: string
 }
 
+interface BankAccount {
+  bank: string
+  name: string
+  account: string
+}
+
 export default function PaymentConfirmPage() {
   const params = useParams()
   const router = useRouter()
@@ -67,8 +73,14 @@ export default function PaymentConfirmPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
   const statusCheckInterval = useRef<NodeJS.Timeout | null>(null)
+
+  // Load bank accounts from database
+  useEffect(() => {
+    fetchBankAccounts()
+  }, [])
 
   // Load payment data
   useEffect(() => {
@@ -91,6 +103,21 @@ export default function PaymentConfirmPage() {
       }
     }
   }, [paymentId])
+
+  const fetchBankAccounts = async () => {
+    try {
+      const response = await fetch('/api/settings?category=payment&key=bank_accounts')
+      const { data } = await response.json()
+
+      if (data && data.length > 0) {
+        const bankAccountsSetting = data[0]
+        setBankAccounts(bankAccountsSetting.value || [])
+      }
+    } catch (error) {
+      console.error('Error fetching bank accounts:', error)
+      // Don't show error to user, just use empty array
+    }
+  }
 
   const loadPaymentData = async () => {
     try {
@@ -455,7 +482,7 @@ export default function PaymentConfirmPage() {
         )}
 
         {/* Bank Options */}
-        {paymentData.method === 'transfer' && (paymentData.bank_options || paymentData.bank_details) && (
+        {paymentData.method === 'transfer' && bankAccounts.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Pilih Rekening Transfer
@@ -480,54 +507,35 @@ export default function PaymentConfirmPage() {
               </div>
             </div>
 
-            {/* Bank Options */}
-            {paymentData.bank_options ? (
-              <div className="space-y-4">
-                {paymentData.bank_options.map((bank, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900">{bank.bank_name}</h4>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(bank.account_number)
-                          toast.success('Nomor rekening berhasil disalin!')
-                        }}
-                        className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
-                      >
-                        Copy No. Rek
-                      </button>
+            {/* Bank Accounts from Database */}
+            <div className="space-y-4">
+              {bankAccounts.map((bank, index) => (
+                <div key={index} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-gray-900">{bank.bank}</h4>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(bank.account)
+                        toast.success('Nomor rekening berhasil disalin!')
+                      }}
+                      className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
+                    >
+                      Copy No. Rek
+                    </button>
+                  </div>
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <div className="flex justify-between">
+                      <span>Nomor Rekening:</span>
+                      <span className="font-mono font-medium text-gray-900">{bank.account}</span>
                     </div>
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <div className="flex justify-between">
-                        <span>Nomor Rekening:</span>
-                        <span className="font-mono font-medium text-gray-900">{bank.account_number}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Nama Penerima:</span>
-                        <span className="font-medium text-gray-900">{bank.account_name}</span>
-                      </div>
+                    <div className="flex justify-between">
+                      <span>Nama Penerima:</span>
+                      <span className="font-medium text-gray-900">{bank.name}</span>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : paymentData.bank_details && (
-              <div className="border border-gray-200 rounded-lg p-4">
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Bank</span>
-                    <span className="font-medium text-gray-900">{paymentData.bank_details.bank_name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Nomor Rekening</span>
-                    <span className="font-medium text-gray-900">{paymentData.bank_details.account_number}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Nama Penerima</span>
-                    <span className="font-medium text-gray-900">{paymentData.bank_details.account_name}</span>
                   </div>
                 </div>
-              </div>
-            )}
+              ))}
+            </div>
 
             {/* Instructions */}
             {paymentData.instructions && (

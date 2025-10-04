@@ -44,7 +44,7 @@ export default function HomePage() {
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-yellow-50 to-orange-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -57,7 +57,7 @@ export default function HomePage() {
         
         <div className="bg-white rounded-xl shadow-lg p-6">
           <div className="text-center mb-6">
-            <QrCode className="w-16 h-16 text-yellow-600 mx-auto mb-4" />
+            <QrCode className="w-16 h-16 text-blue-600 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-900">
               Mulai Pesan
             </h2>
@@ -75,7 +75,7 @@ export default function HomePage() {
                   value={tableNumber}
                   onChange={(e) => setTableNumber(e.target.value)}
                   placeholder="Masukkan nomor meja (contoh: 1, 2, 3)"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-gray-900 placeholder-gray-500 bg-white"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white"
                   disabled={isLoading}
                   required
                 />
@@ -85,7 +85,7 @@ export default function HomePage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-yellow-600 text-white py-3 rounded-lg hover:bg-yellow-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             >
               {isLoading ? (
                 <>

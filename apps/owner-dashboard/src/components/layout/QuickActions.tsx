@@ -1,1 +1,0 @@
-// Quick actions component

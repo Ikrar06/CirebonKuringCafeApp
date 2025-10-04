@@ -145,6 +145,12 @@ export default function PaymentPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [enabledMethods, setEnabledMethods] = useState<Record<string, boolean>>({
+    cash: true,
+    card: true,
+    qris: true,
+    transfer: true
+  })
 
   // Payment methods configuration
   const paymentMethods: PaymentMethod[] = [
@@ -210,6 +216,11 @@ export default function PaymentPage() {
     }
   ]
 
+  // Load payment methods from database
+  useEffect(() => {
+    fetchPaymentMethods()
+  }, [])
+
   // Load order data on mount
   useEffect(() => {
     if (!orderId) {
@@ -224,6 +235,27 @@ export default function PaymentPage() {
   // Session validation removed for payment page - payment should work with valid order ID
   // The order creation flow already validates the session, so if we have a valid order,
   // payment should proceed regardless of current session state
+
+  // Fetch payment methods from database
+  const fetchPaymentMethods = async () => {
+    try {
+      const response = await fetch('/api/settings?category=payment&key=methods')
+      const { data } = await response.json()
+
+      if (data && data.length > 0) {
+        const methodsSetting = data[0]
+        setEnabledMethods(methodsSetting.value || {
+          cash: true,
+          card: true,
+          qris: true,
+          transfer: true
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching payment methods:', error)
+      // Keep default all enabled on error
+    }
+  }
 
   // Load order data
   const loadOrderData = async () => {
@@ -478,10 +510,12 @@ export default function PaymentPage() {
           </div>
 
           <div className="p-4 space-y-3">
-            {paymentMethods.map((method) => {
+            {paymentMethods
+              .filter((method) => enabledMethods[method.type] === true)
+              .map((method) => {
               const availability = getMethodAvailability(method)
               const isSelected = selectedMethod === method.id
-              
+
               return (
                 <button
                   key={method.id}
