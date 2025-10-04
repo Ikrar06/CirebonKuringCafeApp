@@ -223,6 +223,31 @@ export async function sendMissingClockOutReminder(
   return sendTelegramMessage(chatId, message)
 }
 
+/**
+ * Send check-in confirmation (alias for attendance reminder)
+ */
+export async function sendCheckInConfirmation(
+  chatId: string,
+  employeeName: string,
+  shiftStart: string,
+  shiftEnd: string
+): Promise<boolean> {
+  return sendAttendanceReminder(chatId, employeeName, shiftStart, shiftEnd)
+}
+
+/**
+ * Send late check-in warning (alias for late attendance warning)
+ */
+export async function sendLateCheckInWarning(
+  chatId: string,
+  employeeName: string,
+  scheduledTime: string,
+  actualTime: string,
+  minutesLate: number
+): Promise<boolean> {
+  return sendLateAttendanceWarning(chatId, employeeName, scheduledTime, actualTime, minutesLate)
+}
+
 // ============================================
 // SHIFT NOTIFICATIONS
 // ============================================
