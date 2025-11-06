@@ -30,10 +30,19 @@ interface Shift {
   created_at: string
 }
 
+// Helper to get local date in YYYY-MM-DD format (Indonesia timezone)
+const getLocalDateString = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export default function ShiftsPage() {
   const [shifts, setShifts] = useState<Shift[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+  const [selectedDate, setSelectedDate] = useState(getLocalDateString())
   const [filterPosition, setFilterPosition] = useState<string>('')
 
   useEffect(() => {
@@ -88,7 +97,7 @@ export default function ShiftsPage() {
   }
 
   const goToToday = () => {
-    setSelectedDate(new Date().toISOString().split('T')[0])
+    setSelectedDate(getLocalDateString())
   }
 
   // Filter shifts
@@ -199,7 +208,7 @@ export default function ShiftsPage() {
               <ChevronLeft className="h-5 w-5" />
             </button>
             <div className="flex items-center space-x-3">
-              <Calendar className="h-5 w-5 text-gray-400" />
+              <Calendar className="h-5 w-5 text-gray-500" />
               <div>
                 <input
                   type="date"
@@ -224,11 +233,11 @@ export default function ShiftsPage() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Filter className="h-5 w-5 text-gray-400" />
+            <Filter className="h-5 w-5 text-gray-500" />
             <select
               value={filterPosition}
               onChange={(e) => setFilterPosition(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             >
               <option value="">All Positions</option>
               <option value="pelayan">Pelayan</option>
@@ -276,7 +285,7 @@ export default function ShiftsPage() {
       {isLoading ? (
         <div className="bg-white border border-gray-200 rounded-xl">
           <div className="flex items-center justify-center py-12">
-            <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+            <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
           </div>
         </div>
       ) : Object.keys(shiftsByTime).length === 0 ? (

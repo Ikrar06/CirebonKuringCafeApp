@@ -249,13 +249,13 @@ export default function PromosPage() {
       <div className="bg-white border border-gray-200 rounded-xl p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             <input
               type="text"
               placeholder="Search promos..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             />
           </div>
 
@@ -274,7 +274,7 @@ export default function PromosPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
           >
             <option value="">All Status</option>
             <option value="active">Active Only</option>
@@ -320,7 +320,7 @@ export default function PromosPage() {
                       {promo.is_active ? (
                         <ToggleRight className="h-5 w-5 text-green-600" />
                       ) : (
-                        <ToggleLeft className="h-5 w-5 text-gray-400" />
+                        <ToggleLeft className="h-5 w-5 text-gray-500" />
                       )}
                     </button>
                   </div>

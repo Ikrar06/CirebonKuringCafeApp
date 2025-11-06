@@ -68,7 +68,7 @@ export default function OrderStatusPage() {
       }
 
       // Handle nested response structure: { data: { data: actualOrderStatus } }
-      const orderStatusData = response.data.data || response.data
+      const orderStatusData = (response.data as any).data || response.data
 
       setOrderStatus(orderStatusData)
 
@@ -112,7 +112,7 @@ export default function OrderStatusPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <Package className="h-16 w-16 text-gray-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Pesanan Tidak Ditemukan
           </h2>
@@ -273,7 +273,7 @@ export default function OrderStatusPage() {
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                     step.completed
                       ? 'bg-green-100 text-green-600'
-                      : 'bg-gray-100 text-gray-400'
+                      : 'bg-gray-100 text-gray-500'
                   }`}>
                     {step.completed ? (
                       <CheckCircle className="h-4 w-4" />

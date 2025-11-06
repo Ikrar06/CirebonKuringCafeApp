@@ -261,7 +261,7 @@ export default function PrintersPage() {
                         type="text"
                         value={printer.ipAddress}
                         onChange={(e) => handleChange(printer.id, 'ipAddress', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-mono text-sm"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-mono text-sm text-gray-600"
                         placeholder="192.168.1.100"
                       />
                     </div>
@@ -274,7 +274,7 @@ export default function PrintersPage() {
                         type="text"
                         value={printer.port}
                         onChange={(e) => handleChange(printer.id, 'port', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-mono text-sm"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-mono text-sm text-gray-600"
                         placeholder="9100"
                       />
                     </div>
@@ -286,7 +286,7 @@ export default function PrintersPage() {
 
           {printers.length === 0 && (
             <div className="bg-white rounded-xl border-2 border-dashed border-gray-300 p-12 text-center">
-              <Printer className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <Printer className="h-16 w-16 text-gray-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Belum ada printer</h3>
               <p className="text-gray-600 mb-6">Tambahkan printer untuk mulai cetak order</p>
               <button

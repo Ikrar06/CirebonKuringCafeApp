@@ -53,7 +53,6 @@ export async function GET(
       salary_amount: parseFloat(employee.salary_amount || 0),
       telegram_chat_id: employee.telegram_chat_id,
       is_active: employee.employment_status === 'active',
-      shift: null,
       hire_date: employee.join_date,
       created_at: employee.created_at
     }
@@ -85,7 +84,6 @@ export async function PATCH(
       salary_amount,
       telegram_chat_id,
       is_active,
-      shift,
       hire_date
     } = body
 

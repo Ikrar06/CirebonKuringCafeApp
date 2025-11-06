@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { sendBulkShiftNotifications } from '@/lib/telegram/bot'
+
+// Import telegram bot functions if they exist
+let sendBulkShiftNotifications: any
+try {
+  const telegramBot = require('@/lib/telegram/bot')
+  sendBulkShiftNotifications = telegramBot.sendBulkShiftNotifications
+} catch (error) {
+  console.log('Telegram bot not configured, notifications will be disabled')
+  sendBulkShiftNotifications = null
+}
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -104,12 +113,20 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error creating shifts:', error)
+
+      // Handle unique constraint violation
+      if (error.code === '23505' && error.message.includes('unique_shift_per_employee_per_day')) {
+        return NextResponse.json({
+          error: 'One or more employees already have a shift scheduled for this date. Please check existing shifts or delete the old shift before creating a new one.'
+        }, { status: 400 })
+      }
+
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Send Telegram notifications if requested
+    // Send Telegram notifications if requested and bot is configured
     let notificationResults = null
-    if (send_notifications && createdShifts && createdShifts.length > 0) {
+    if (send_notifications && sendBulkShiftNotifications && createdShifts && createdShifts.length > 0) {
       try {
         const notificationsToSend = createdShifts
           .filter((shift: any) =>

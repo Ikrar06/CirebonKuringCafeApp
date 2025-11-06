@@ -169,13 +169,13 @@ export default function MenuPage() {
           {/* Search */}
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <input
                 type="text"
                 placeholder="Search menu items..."
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
               />
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function MenuPage() {
             <select
               value={selectedCategory}
               onChange={(e) => handleCategoryFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             >
               <option value="">All Categories</option>
               {categories.map((category) => (
@@ -345,7 +345,7 @@ export default function MenuPage() {
       ) : (
         <div className="text-center py-12">
           <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-            <Grid className="h-12 w-12 text-gray-400" />
+            <Grid className="h-12 w-12 text-gray-500" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No menu items found</h3>
           <p className="text-gray-600 mb-6">

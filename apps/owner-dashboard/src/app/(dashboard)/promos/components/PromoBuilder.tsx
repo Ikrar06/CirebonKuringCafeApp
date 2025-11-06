@@ -89,7 +89,7 @@ export default function PromoBuilder({ initialData, onSubmit, onCancel, isEdit =
               onChange={handleChange}
               required
               placeholder="e.g., Grand Opening Sale"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             />
           </div>
 
@@ -103,7 +103,7 @@ export default function PromoBuilder({ initialData, onSubmit, onCancel, isEdit =
               value={formData.code}
               onChange={handleChange}
               placeholder="e.g., OPENING20"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono uppercase"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono uppercase text-gray-600"
             />
             <p className="text-xs text-gray-500 mt-1">Optional - Leave empty for auto-generated code</p>
           </div>
@@ -119,7 +119,7 @@ export default function PromoBuilder({ initialData, onSubmit, onCancel, isEdit =
             onChange={handleChange}
             rows={3}
             placeholder="Describe this promotion..."
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
           />
         </div>
       </div>
@@ -161,7 +161,7 @@ export default function PromoBuilder({ initialData, onSubmit, onCancel, isEdit =
                 min="0"
                 step={formData.promo_type === 'percentage' ? '1' : '1000'}
                 placeholder={formData.promo_type === 'percentage' ? '20' : '10000'}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
               />
               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 {formData.promo_type === 'percentage' ? '%' : 'Rp'}
@@ -193,7 +193,7 @@ export default function PromoBuilder({ initialData, onSubmit, onCancel, isEdit =
               min="0"
               step="1000"
               placeholder="e.g., 50000"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             />
             <p className="text-xs text-gray-500 mt-1">
               Optional - Cap the maximum discount amount
@@ -213,7 +213,7 @@ export default function PromoBuilder({ initialData, onSubmit, onCancel, isEdit =
             min="0"
             step="1000"
             placeholder="e.g., 50000"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
           />
           <p className="text-xs text-gray-500 mt-1">
             Optional - Minimum order amount to use this promo
@@ -270,7 +270,7 @@ export default function PromoBuilder({ initialData, onSubmit, onCancel, isEdit =
               onChange={handleChange}
               min="0"
               placeholder="e.g., 100"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             />
             <p className="text-xs text-gray-500 mt-1">
               Optional - Limit total number of uses
@@ -288,7 +288,7 @@ export default function PromoBuilder({ initialData, onSubmit, onCancel, isEdit =
               onChange={handleChange}
               min="0"
               placeholder="e.g., 1"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             />
             <p className="text-xs text-gray-500 mt-1">
               Optional - Limit uses per customer

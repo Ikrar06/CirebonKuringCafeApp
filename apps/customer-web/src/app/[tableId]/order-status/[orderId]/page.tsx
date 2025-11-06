@@ -309,11 +309,9 @@ export default function OrderStatusPage() {
 
     try {
       const response = await apiClient.submitRating({
-        order_id: orderStatus.id,
+        orderId: orderStatus.id,
         rating,
-        review: review.trim() || undefined,
-        service_rating: rating,
-        food_rating: rating
+        comment: review.trim() || undefined
       })
 
       if (response.error) {
@@ -422,7 +420,7 @@ export default function OrderStatusPage() {
               <button
                 onClick={() => setNotificationsEnabled(!notificationsEnabled)}
                 className={`p-2 rounded-lg transition-colors ${
-                  notificationsEnabled ? 'text-blue-600 bg-blue-50' : 'text-gray-400 bg-gray-50'
+                  notificationsEnabled ? 'text-blue-600 bg-blue-50' : 'text-gray-500 bg-gray-50'
                 }`}
                 title={notificationsEnabled ? 'Matikan notifikasi' : 'Aktifkan notifikasi'}
               >
@@ -482,7 +480,7 @@ export default function OrderStatusPage() {
                       ? 'bg-green-100 border-green-500 text-green-600' 
                       : step.status === 'current'
                       ? 'bg-blue-100 border-blue-500 text-blue-600 animate-pulse'
-                      : 'bg-gray-100 border-gray-300 text-gray-400'
+                      : 'bg-gray-100 border-gray-300 text-gray-500'
                     }
                   `}>
                     {step.status === 'completed' ? (

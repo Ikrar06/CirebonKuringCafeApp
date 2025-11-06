@@ -98,7 +98,7 @@ export default function DenominationCalculator({ onTotalChange }: DenominationCa
                     value={count || ''}
                     onChange={(e) => handleCountChange(denom.value, e.target.value)}
                     placeholder="0"
-                    className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-right focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-right focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                   />
                 </div>
               )
@@ -133,7 +133,7 @@ export default function DenominationCalculator({ onTotalChange }: DenominationCa
                     value={count || ''}
                     onChange={(e) => handleCountChange(denom.value, e.target.value)}
                     placeholder="0"
-                    className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-right focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-right focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                   />
                 </div>
               )

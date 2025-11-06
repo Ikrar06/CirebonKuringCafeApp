@@ -188,7 +188,7 @@ export default function TaxSettingsPage() {
                       step="0.1"
                       value={taxData.ppn}
                       onChange={(e) => setTaxData({ ...taxData, ppn: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                       placeholder="11"
                     />
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
@@ -213,7 +213,7 @@ export default function TaxSettingsPage() {
                       step="0.1"
                       value={taxData.service}
                       onChange={(e) => setTaxData({ ...taxData, service: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                       placeholder="5"
                     />
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">

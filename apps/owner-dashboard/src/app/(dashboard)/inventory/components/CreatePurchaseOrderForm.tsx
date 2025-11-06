@@ -191,7 +191,7 @@ export default function CreatePurchaseOrderForm({ onClose, onSuccess }: CreatePu
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+            className="p-2 text-gray-500 hover:text-gray-600 rounded-lg hover:bg-gray-100"
           >
             <X className="h-5 w-5" />
           </button>
@@ -332,7 +332,7 @@ export default function CreatePurchaseOrderForm({ onClose, onSuccess }: CreatePu
                         step="0.01"
                         value={item.quantity || ''}
                         onChange={(e) => updateItem(index, 'quantity', parseFloat(e.target.value) || 0)}
-                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                           errors[`item_${index}_quantity`] ? 'border-red-500' : 'border-gray-300'
                         }`}
                         placeholder="0"
@@ -363,7 +363,7 @@ export default function CreatePurchaseOrderForm({ onClose, onSuccess }: CreatePu
                         step="0.01"
                         value={item.unit_price || ''}
                         onChange={(e) => updateItem(index, 'unit_price', parseFloat(e.target.value) || 0)}
-                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                           errors[`item_${index}_price`] ? 'border-red-500' : 'border-gray-300'
                         }`}
                         placeholder="0"
@@ -413,7 +413,7 @@ export default function CreatePurchaseOrderForm({ onClose, onSuccess }: CreatePu
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
               placeholder="Additional notes or special instructions..."
             />
           </div>

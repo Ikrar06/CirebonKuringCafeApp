@@ -1,1 +1,0 @@
-// Employee Portal - Inventory management page component

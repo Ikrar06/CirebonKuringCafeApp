@@ -64,7 +64,6 @@ export async function GET(request: NextRequest) {
           telegram_chat_id: emp.telegram_chat_id,
           telegram_notifications_enabled: emp.telegram_notifications_enabled || false,
           is_active: emp.employment_status === 'active',
-          shift: null,
           hire_date: emp.join_date,
           created_at: emp.created_at
         }
@@ -88,6 +87,7 @@ export async function POST(request: NextRequest) {
     const {
       email,
       password,
+      username,
       full_name,
       phone,
       address,
@@ -96,14 +96,21 @@ export async function POST(request: NextRequest) {
       salary_amount,
       telegram_chat_id,
       is_active,
-      shift,
       hire_date
     } = body
 
     // Validate required fields
-    if (!email || !password || !full_name || !phone || !position || !salary_type || salary_amount === undefined) {
+    if (!email || !password || !username || !full_name || !phone || !position || !salary_type || salary_amount === undefined) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
+
+    // Validate username format
+    if (!/^[a-z0-9._]+$/.test(username)) {
+      return NextResponse.json(
+        { error: 'Username can only contain lowercase letters, numbers, dots, and underscores' },
         { status: 400 }
       )
     }
@@ -118,6 +125,20 @@ export async function POST(request: NextRequest) {
     if (existingUser) {
       return NextResponse.json(
         { error: 'Email already exists' },
+        { status: 400 }
+      )
+    }
+
+    // Check if username already exists
+    const { data: existingEmployee } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('username', username.toLowerCase())
+      .single()
+
+    if (existingEmployee) {
+      return NextResponse.json(
+        { error: 'Username already exists. Please choose a different username.' },
         { status: 400 }
       )
     }
@@ -146,26 +167,62 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate employee code
-    const { data: lastEmployee } = await supabase
-      .from('employees')
-      .select('employee_code')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-
+    // Generate unique employee code
     let employeeCode = 'EMP001'
-    if (lastEmployee?.employee_code) {
-      const lastNumber = parseInt(lastEmployee.employee_code.replace('EMP', ''))
-      employeeCode = `EMP${String(lastNumber + 1).padStart(3, '0')}`
+    let codeExists = true
+    let attempts = 0
+    const maxAttempts = 100
+
+    while (codeExists && attempts < maxAttempts) {
+      // Get the highest employee code
+      const { data: employees } = await supabase
+        .from('employees')
+        .select('employee_code')
+        .order('employee_code', { ascending: false })
+        .limit(1)
+
+      if (employees && employees.length > 0 && employees[0].employee_code) {
+        const lastNumber = parseInt(employees[0].employee_code.replace('EMP', ''))
+        if (!isNaN(lastNumber)) {
+          employeeCode = `EMP${String(lastNumber + 1).padStart(3, '0')}`
+        }
+      }
+
+      // Check if this code already exists
+      const { data: existingCode } = await supabase
+        .from('employees')
+        .select('id')
+        .eq('employee_code', employeeCode)
+        .single()
+
+      if (!existingCode) {
+        codeExists = false
+      } else {
+        // If code exists, increment and try again
+        const currentNumber = parseInt(employeeCode.replace('EMP', ''))
+        employeeCode = `EMP${String(currentNumber + 1).padStart(3, '0')}`
+      }
+
+      attempts++
     }
 
-    // Create employee record
+    if (codeExists) {
+      return NextResponse.json(
+        { error: 'Unable to generate unique employee code. Please try again.' },
+        { status: 500 }
+      )
+    }
+
+    console.log('Generated unique employee code:', employeeCode)
+
+    // Create employee record with username and password hash
     const { data: employee, error: employeeError } = await supabase
       .from('employees')
       .insert({
         user_id: user.id,
         employee_code: employeeCode,
+        username: username.toLowerCase(),  // Use username from form
+        password_hash: hashedPassword,  // Add password hash for employee portal login
         full_name,
         phone_number: phone,
         address,
@@ -194,8 +251,22 @@ export async function POST(request: NextRequest) {
         .delete()
         .eq('id', user.id)
 
+      // Provide user-friendly error messages
+      let errorMessage = employeeError.message
+
+      if (employeeError.code === '23505') {
+        // Unique constraint violation
+        if (employeeError.message.includes('employee_code')) {
+          errorMessage = 'Employee code already exists. Please try again.'
+        } else if (employeeError.message.includes('username')) {
+          errorMessage = 'Username already exists. Please choose a different username.'
+        } else {
+          errorMessage = 'This employee record already exists.'
+        }
+      }
+
       return NextResponse.json(
-        { error: employeeError.message },
+        { error: errorMessage },
         { status: 500 }
       )
     }

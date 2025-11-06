@@ -19,7 +19,9 @@ import {
   Percent,
   DollarSign,
   Receipt,
-  FileText
+  FileText,
+  Calendar,
+  Clock
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -76,6 +78,24 @@ const sidebarItems: SidebarItem[] = [
     label: 'Staff Management',
     icon: Users,
     href: '/employees'
+  },
+  {
+    id: 'leave-requests',
+    label: 'Leave Requests',
+    icon: Calendar,
+    href: '/leave-requests'
+  },
+  {
+    id: 'overtime-requests',
+    label: 'Overtime Requests',
+    icon: Clock,
+    href: '/overtime-requests'
+  },
+  {
+    id: 'payroll',
+    label: 'Payroll',
+    icon: DollarSign,
+    href: '/payroll'
   },
   {
     id: 'analytics',

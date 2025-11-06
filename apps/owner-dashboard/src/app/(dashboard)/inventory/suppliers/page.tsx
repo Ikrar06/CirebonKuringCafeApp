@@ -145,7 +145,7 @@ export default function SuppliersPage() {
           {/* Search */}
           <div>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <input
                 type="text"
                 placeholder="Search suppliers..."
@@ -156,7 +156,7 @@ export default function SuppliersPage() {
                     loadSuppliers()
                   }
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
               />
             </div>
           </div>
@@ -166,7 +166,7 @@ export default function SuppliersPage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             >
               <option value="">All Status</option>
               <option value="active">Active Only</option>
@@ -191,11 +191,11 @@ export default function SuppliersPage() {
       {/* Suppliers Grid */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+          <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
         </div>
       ) : filteredSuppliers.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
-          <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <Package className="h-12 w-12 text-gray-500 mx-auto mb-4" />
           <p>No suppliers found</p>
         </div>
       ) : (
@@ -228,14 +228,14 @@ export default function SuppliersPage() {
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => setEditingSupplier(supplier.id)}
-                      className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50"
+                      className="p-2 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50"
                       title="Edit supplier"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => setDeletingSupplier(supplier.id)}
-                      className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50"
+                      className="p-2 text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50"
                       title="Delete supplier"
                     >
                       <Trash2 className="h-4 w-4" />

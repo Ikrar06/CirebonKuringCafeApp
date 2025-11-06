@@ -103,7 +103,7 @@ export default function CartItem({
                 sizes="64px"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
+              <div className="w-full h-full flex items-center justify-center text-gray-500">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                 </svg>
@@ -136,7 +136,7 @@ export default function CartItem({
               
               {/* Preparation time */}
               <div className="flex items-center space-x-1 mt-2">
-                <Clock className="h-3 w-3 text-gray-400" />
+                <Clock className="h-3 w-3 text-gray-500" />
                 <span className="text-xs text-gray-500">
                   {item.preparation_time} menit
                 </span>
@@ -151,7 +151,7 @@ export default function CartItem({
                     onClick={onEdit}
                     className="
                       p-2 
-                      text-gray-400 
+                      text-gray-500 
                       hover:text-blue-600 
                       hover:bg-blue-50 
                       rounded-lg 
@@ -167,7 +167,7 @@ export default function CartItem({
                   onClick={handleRemove}
                   className="
                     p-2 
-                    text-gray-400 
+                    text-gray-500 
                     hover:text-red-600 
                     hover:bg-red-50 
                     rounded-lg 

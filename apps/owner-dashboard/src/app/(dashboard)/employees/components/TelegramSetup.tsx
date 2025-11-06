@@ -64,7 +64,7 @@ export default function TelegramSetup({ chatId, onChatIdChange }: TelegramSetupP
           value={chatId || ''}
           onChange={(e) => onChatIdChange(e.target.value)}
           placeholder="e.g., 123456789"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
         />
         <p className="text-xs text-gray-500 mt-1">
           Optional: Enter employee's Telegram Chat ID for notifications

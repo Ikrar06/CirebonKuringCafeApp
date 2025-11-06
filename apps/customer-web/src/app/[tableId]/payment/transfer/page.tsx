@@ -265,7 +265,7 @@ export default function BankTransferPaymentPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <University className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <University className="h-12 w-12 text-gray-500 mx-auto mb-4" />
           <h2 className="text-lg font-semibold text-gray-900 mb-2">
             Memuat Transfer Bank
           </h2>
@@ -487,7 +487,7 @@ export default function BankTransferPaymentPage() {
               className="w-full py-8 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <div className="text-center">
-                <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                <Upload className="h-8 w-8 text-gray-500 mx-auto mb-2" />
                 <p className="text-sm font-medium text-gray-900">
                   Pilih File Bukti Transfer
                 </p>

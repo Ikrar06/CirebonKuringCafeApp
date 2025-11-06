@@ -314,7 +314,7 @@ function TableHeader<T>({
               {column.sortable && (
                 <button
                   onClick={() => onSort(column.key)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-gray-500 hover:text-gray-600 transition-colors"
                 >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     {sortConfig?.key === column.key ? (
@@ -515,7 +515,7 @@ function TableFilters<T>({
               value={filterConfig[column.key] || ''}
               onChange={(e) => handleFilterChange(column.key, e.target.value)}
               placeholder={`Filter ${column.title.toLowerCase()}...`}
-              className="rounded-md border border-gray-300 px-3 py-1 text-sm focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="rounded-md border border-gray-300 px-3 py-1 text-sm focus:border-blue-600 focus:ring-1 focus:ring-blue-600 text-gray-600"
             />
           </div>
         ))}

@@ -294,7 +294,7 @@ export default function NotificationsPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Pengumuman Libur"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                 />
               </div>
 
@@ -308,7 +308,7 @@ export default function NotificationsPage() {
                   onChange={(e) => setMessage(e.target.value)}
                   rows={6}
                   placeholder="Write your message here..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   {message.length} characters
@@ -326,7 +326,7 @@ export default function NotificationsPage() {
                   onChange={(e) => setEmoji(e.target.value)}
                   placeholder="📬"
                   maxLength={2}
-                  className="w-20 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-xl"
+                  className="w-20 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-xl text-gray-600"
                 />
               </div>
 
@@ -378,7 +378,7 @@ export default function NotificationsPage() {
 
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <RefreshCw className="h-6 w-6 text-gray-400 animate-spin" />
+                <RefreshCw className="h-6 w-6 text-gray-500 animate-spin" />
               </div>
             ) : (
               <div className="space-y-2 max-h-[500px] overflow-y-auto">

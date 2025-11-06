@@ -223,7 +223,7 @@ export default function CafeInfoPage() {
                     type="text"
                     value={cafeInfo.name}
                     onChange={(e) => handleChange('name', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                     placeholder="Masukkan nama cafe"
                   />
                 </div>
@@ -236,7 +236,7 @@ export default function CafeInfoPage() {
                     value={cafeInfo.description}
                     onChange={(e) => handleChange('description', e.target.value)}
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                     placeholder="Deskripsi singkat tentang cafe"
                   />
                 </div>
@@ -260,7 +260,7 @@ export default function CafeInfoPage() {
                     type="tel"
                     value={cafeInfo.phone}
                     onChange={(e) => handleChange('phone', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                     placeholder="+62 xxx xxxx xxxx"
                   />
                 </div>
@@ -273,7 +273,7 @@ export default function CafeInfoPage() {
                     type="email"
                     value={cafeInfo.email}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                     placeholder="email@cafe.com"
                   />
                 </div>
@@ -286,7 +286,7 @@ export default function CafeInfoPage() {
                     type="tel"
                     value={cafeInfo.whatsapp || ''}
                     onChange={(e) => handleChange('whatsapp', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                     placeholder="+62 xxx xxxx xxxx"
                   />
                 </div>
@@ -299,7 +299,7 @@ export default function CafeInfoPage() {
                     type="text"
                     value={cafeInfo.instagram || ''}
                     onChange={(e) => handleChange('instagram', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                     placeholder="@username"
                   />
                 </div>
@@ -322,7 +322,7 @@ export default function CafeInfoPage() {
                   value={cafeInfo.address}
                   onChange={(e) => handleChange('address', e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                   placeholder="Jl. ..., Kecamatan, Kota, Provinsi"
                 />
               </div>

@@ -220,13 +220,13 @@ export default function EmployeesPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <input
                 type="text"
                 placeholder="Search employees..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
               />
             </div>
           </div>
@@ -235,7 +235,7 @@ export default function EmployeesPage() {
             <select
               value={filterPosition}
               onChange={(e) => setFilterPosition(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             >
               <option value="">All Positions</option>
               <option value="pelayan">Pelayan</option>
@@ -249,7 +249,7 @@ export default function EmployeesPage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             >
               <option value="">All Status</option>
               <option value="active">Active Only</option>
@@ -263,7 +263,7 @@ export default function EmployeesPage() {
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+            <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
           </div>
         ) : filteredEmployees.length === 0 ? (
           <div className="text-center py-12">
@@ -300,7 +300,7 @@ export default function EmployeesPage() {
                         <div className="text-sm font-medium text-gray-900">{employee.full_name}</div>
                         <div className="text-xs text-gray-500">{employee.email}</div>
                         {employee.hire_date && (
-                          <div className="text-xs text-gray-400 flex items-center mt-1">
+                          <div className="text-xs text-gray-500 flex items-center mt-1">
                             <Calendar className="h-3 w-3 mr-1" />
                             Hired: {new Date(employee.hire_date).toLocaleDateString('id-ID')}
                           </div>
@@ -346,7 +346,7 @@ export default function EmployeesPage() {
                           Connected
                         </div>
                       ) : (
-                        <div className="text-xs text-gray-400">Not set</div>
+                        <div className="text-xs text-gray-500">Not set</div>
                       )}
                     </td>
                     <td className="px-6 py-4">

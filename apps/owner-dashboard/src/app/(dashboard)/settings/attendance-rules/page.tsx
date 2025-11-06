@@ -185,7 +185,7 @@ export default function AttendanceRulesPage() {
                   step="10"
                   value={rules.max_distance}
                   onChange={(e) => setRules({ ...rules, max_distance: parseInt(e.target.value) || 100 })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                   placeholder="100"
                 />
                 <p className="mt-2 text-sm text-gray-600">
@@ -227,7 +227,7 @@ export default function AttendanceRulesPage() {
                   step="5"
                   value={rules.break_duration}
                   onChange={(e) => setRules({ ...rules, break_duration: parseInt(e.target.value) || 30 })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                   placeholder="30"
                 />
                 <p className="mt-2 text-sm text-gray-600">
@@ -272,7 +272,7 @@ export default function AttendanceRulesPage() {
                   step="5"
                   value={rules.late_tolerance}
                   onChange={(e) => setRules({ ...rules, late_tolerance: parseInt(e.target.value) || 15 })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                   placeholder="15"
                 />
                 <p className="mt-2 text-sm text-gray-600">

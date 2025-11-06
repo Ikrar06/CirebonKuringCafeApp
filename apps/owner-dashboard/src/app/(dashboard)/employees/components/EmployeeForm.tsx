@@ -13,6 +13,7 @@ interface EmployeeFormProps {
 export interface EmployeeFormData {
   email: string
   password?: string
+  username?: string
   full_name: string
   phone: string
   address?: string
@@ -21,7 +22,6 @@ export interface EmployeeFormData {
   salary_amount: number
   telegram_chat_id?: string
   is_active: boolean
-  shift?: string
   hire_date?: string
 }
 
@@ -29,6 +29,7 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
   const [formData, setFormData] = useState<EmployeeFormData>({
     email: initialData?.email || '',
     password: '',
+    username: initialData?.username || '',
     full_name: initialData?.full_name || '',
     phone: initialData?.phone || '',
     address: initialData?.address || '',
@@ -37,7 +38,6 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
     salary_amount: initialData?.salary_amount || 0,
     telegram_chat_id: initialData?.telegram_chat_id || '',
     is_active: initialData?.is_active !== undefined ? initialData.is_active : true,
-    shift: initialData?.shift || '',
     hire_date: initialData?.hire_date || new Date().toISOString().split('T')[0]
   })
 
@@ -57,13 +57,6 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
     { value: 'hourly', label: 'Hourly', description: 'Hourly rate based on hours worked' }
   ]
 
-  const shifts = [
-    'Morning (07:00 - 15:00)',
-    'Afternoon (15:00 - 23:00)',
-    'Full Day (07:00 - 23:00)',
-    'Flexible'
-  ]
-
   const validate = () => {
     const newErrors: Record<string, string> = {}
 
@@ -77,6 +70,14 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
       newErrors.password = 'Password is required for new employees'
     } else if (!isEdit && formData.password && formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters'
+    }
+
+    if (!isEdit && !formData.username?.trim()) {
+      newErrors.username = 'Username is required'
+    } else if (!isEdit && formData.username && formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters'
+    } else if (!isEdit && formData.username && !/^[a-z0-9._]+$/.test(formData.username)) {
+      newErrors.username = 'Username can only contain lowercase letters, numbers, dots, and underscores'
     }
 
     if (!formData.full_name.trim()) {
@@ -145,12 +146,12 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
               Email Address *
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                   errors.email ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="employee@example.com"
@@ -171,12 +172,12 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
                 Password *
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                 <input
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                     errors.password ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="Minimum 6 characters"
@@ -185,6 +186,31 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
               {errors.password && (
                 <p className="text-red-600 text-sm mt-1">{errors.password}</p>
               )}
+              <p className="text-xs text-gray-500 mt-1">Employee will change this on first login</p>
+            </div>
+          )}
+
+          {!isEdit && (
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Username * (for Employee Portal login)
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                <input
+                  type="text"
+                  value={formData.username}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase() })}
+                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
+                    errors.username ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="e.g., emp.kasir, dapur01, pelayan.budi"
+                />
+              </div>
+              {errors.username && (
+                <p className="text-red-600 text-sm mt-1">{errors.username}</p>
+              )}
+              <p className="text-xs text-gray-500 mt-1">Only lowercase letters, numbers, dots, and underscores. Employee will use this to login.</p>
             </div>
           )}
         </div>
@@ -206,7 +232,7 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
               type="text"
               value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                 errors.full_name ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="John Doe"
@@ -221,12 +247,12 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
               Phone Number *
             </label>
             <div className="relative">
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                   errors.phone ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="08123456789"
@@ -242,12 +268,12 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
               Hire Date
             </label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <input
                 type="date"
                 value={formData.hire_date}
                 onChange={(e) => setFormData({ ...formData, hire_date: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
               />
             </div>
           </div>
@@ -257,12 +283,12 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
               Address
             </label>
             <div className="relative">
-              <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
               <textarea
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 rows={2}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                 placeholder="Full address"
               />
             </div>
@@ -309,23 +335,6 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
             </div>
           </div>
 
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Shift
-            </label>
-            <select
-              value={formData.shift}
-              onChange={(e) => setFormData({ ...formData, shift: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Select shift</option>
-              {shifts.map((shift) => (
-                <option key={shift} value={shift}>
-                  {shift}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
       </div>
 
@@ -376,7 +385,7 @@ export default function EmployeeForm({ onSubmit, initialData, isEdit = false }: 
               type="number"
               value={formData.salary_amount || ''}
               onChange={(e) => setFormData({ ...formData, salary_amount: parseFloat(e.target.value) || 0 })}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                 errors.salary_amount ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="0"

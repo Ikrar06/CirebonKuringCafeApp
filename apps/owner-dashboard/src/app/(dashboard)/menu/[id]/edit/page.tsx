@@ -334,7 +334,7 @@ export default function EditMenuItemPage() {
                     type="text"
                     value={menuItem.name}
                     onChange={(e) => setMenuItem({ ...menuItem, name: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     placeholder="Menu item name"
                   />
                 </div>
@@ -345,10 +345,10 @@ export default function EditMenuItemPage() {
                     value={menuItem.description}
                     onChange={(e) => setMenuItem({ ...menuItem, description: e.target.value })}
                     rows={3}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     placeholder="Describe this menu item..."
                   />
-                </div>
+                </div> 
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Price (IDR)</label>
@@ -356,7 +356,7 @@ export default function EditMenuItemPage() {
                     type="number"
                     value={menuItem.base_price || menuItem.price || ''}
                     onChange={(e) => setMenuItem({ ...menuItem, base_price: parseInt(e.target.value) || 0 })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     placeholder="0"
                   />
                 </div>
@@ -383,7 +383,7 @@ export default function EditMenuItemPage() {
                     type="number"
                     value={menuItem.estimated_prep_time || menuItem.preparation_time || ''}
                     onChange={(e) => setMenuItem({ ...menuItem, estimated_prep_time: parseInt(e.target.value) || 0 })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     placeholder="0"
                   />
                 </div>
@@ -394,7 +394,7 @@ export default function EditMenuItemPage() {
                     type="number"
                     value={menuItem.calories || ''}
                     onChange={(e) => setMenuItem({ ...menuItem, calories: parseInt(e.target.value) || undefined })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     placeholder="0"
                   />
                 </div>
@@ -450,7 +450,7 @@ export default function EditMenuItemPage() {
 
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
                   <div className="text-center">
-                    <Upload className="h-8 w-8 mx-auto mb-4 text-gray-400" />
+                    <Upload className="h-8 w-8 mx-auto mb-4 text-gray-500" />
                     <p className="text-sm text-gray-600 mb-2">Upload menu item image</p>
                     <p className="text-xs text-gray-500 mb-4">PNG, JPG up to 5MB</p>
                     <input

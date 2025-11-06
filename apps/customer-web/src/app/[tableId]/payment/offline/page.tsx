@@ -282,7 +282,7 @@ export default function OfflinePaymentPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <Clock className="h-16 w-16 text-gray-400 mx-auto mb-4 animate-spin" />
+          <Clock className="h-16 w-16 text-gray-500 mx-auto mb-4 animate-spin" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Memuat Data
           </h2>
@@ -298,7 +298,7 @@ export default function OfflinePaymentPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <CreditCard className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <CreditCard className="h-16 w-16 text-gray-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Data Pesanan Tidak Ditemukan
           </h2>

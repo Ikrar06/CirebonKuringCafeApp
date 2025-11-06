@@ -151,11 +151,11 @@ export default function OvertimeRequestsPage() {
       {/* Filters */}
       <div className="bg-white border border-gray-200 rounded-xl p-4">
         <div className="flex items-center space-x-4">
-          <Filter className="h-5 w-5 text-gray-400" />
+          <Filter className="h-5 w-5 text-gray-500" />
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
           >
             <option value="">All Status</option>
             <option value="pending">Pending Only</option>
@@ -176,7 +176,7 @@ export default function OvertimeRequestsPage() {
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+            <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
           </div>
         ) : filteredRequests.length === 0 ? (
           <div className="text-center py-12">
@@ -209,7 +209,7 @@ export default function OvertimeRequestsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-900 flex items-center">
-                        <Calendar className="h-4 w-4 mr-1 text-gray-400" />
+                        <Calendar className="h-4 w-4 mr-1 text-gray-500" />
                         {new Date(request.date).toLocaleDateString('id-ID', {
                           weekday: 'short',
                           year: 'numeric',

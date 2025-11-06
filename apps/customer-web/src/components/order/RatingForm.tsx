@@ -230,7 +230,7 @@ export function RatingForm({
         
         <button
           onClick={onCancel}
-          className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+          className="p-2 text-gray-500 hover:text-gray-600 transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -364,7 +364,7 @@ export function RatingForm({
               }`}
             >
               <Smile className={`w-8 h-8 mx-auto mb-3 ${
-                ratings.would_recommend ? 'text-green-600' : 'text-gray-400'
+                ratings.would_recommend ? 'text-green-600' : 'text-gray-500'
               }`} />
               <p className="font-semibold text-center">Ya, Pasti!</p>
               <p className="text-sm text-center mt-1 opacity-75">
@@ -384,7 +384,7 @@ export function RatingForm({
               <Frown className={`w-8 h-8 mx-auto mb-3 ${
                 !ratings.would_recommend && ratings.would_recommend !== undefined
                   ? 'text-orange-600' 
-                  : 'text-gray-400'
+                  : 'text-gray-500'
               }`} />
               <p className="font-semibold text-center">Mungkin</p>
               <p className="text-sm text-center mt-1 opacity-75">

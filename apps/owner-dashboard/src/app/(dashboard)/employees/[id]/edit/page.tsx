@@ -63,7 +63,7 @@ export default function EditEmployeePage() {
     return (
       <div className="p-6 max-w-5xl mx-auto">
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+          <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
         </div>
       </div>
     )
@@ -112,7 +112,7 @@ export default function EditEmployeePage() {
       </div>
 
       {/* Form */}
-      <EmployeeForm initialData={employee} onSubmit={handleSubmit} />
+      <EmployeeForm initialData={employee} onSubmit={handleSubmit} isEdit={true} />
     </div>
   )
 }

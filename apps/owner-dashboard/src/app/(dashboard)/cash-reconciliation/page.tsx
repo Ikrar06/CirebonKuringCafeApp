@@ -156,7 +156,7 @@ export default function CashReconciliationPage() {
               onClick={() => setNotification(null)}
               className="ml-4 p-1 hover:bg-black/5 rounded"
             >
-              <XCircle className="h-4 w-4 text-gray-400" />
+              <XCircle className="h-4 w-4 text-gray-500" />
             </button>
           </div>
         </div>
@@ -245,7 +245,7 @@ export default function CashReconciliationPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+          <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
         </div>
       ) : (
         <>

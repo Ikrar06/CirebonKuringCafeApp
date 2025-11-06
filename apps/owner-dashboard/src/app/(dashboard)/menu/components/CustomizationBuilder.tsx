@@ -170,7 +170,7 @@ export default function CustomizationBuilder({
   // Auto-save changes to parent component
   useEffect(() => {
     if (onSave) {
-      onSave(groups).catch(() => {})
+      onSave(groups)
     }
   }, [groups, onSave])
 
@@ -211,7 +211,7 @@ export default function CustomizationBuilder({
             {/* Group Header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
-                <Move className="h-4 w-4 text-gray-400 cursor-move" />
+                <Move className="h-4 w-4 text-gray-500 cursor-move" />
                 <div className="flex-1">
                   {editingGroup === groupIndex.toString() ? (
                     <input
@@ -248,7 +248,7 @@ export default function CustomizationBuilder({
                 )}
                 <button
                   onClick={() => deleteGroup(groupIndex)}
-                  className="p-1 text-gray-400 hover:text-red-600"
+                  className="p-1 text-gray-500 hover:text-red-600"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -278,7 +278,7 @@ export default function CustomizationBuilder({
                     {group.is_required ? (
                       <ToggleRight className="h-5 w-5 text-blue-600" />
                     ) : (
-                      <ToggleLeft className="h-5 w-5 text-gray-400" />
+                      <ToggleLeft className="h-5 w-5 text-gray-500" />
                     )}
                   </button>
                   <span className="text-sm font-medium text-gray-700">Required</span>
@@ -301,7 +301,7 @@ export default function CustomizationBuilder({
 
               {group.options.map((option, optionIndex) => (
                 <div key={optionIndex} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <Move className="h-3 w-3 text-gray-400 cursor-move" />
+                  <Move className="h-3 w-3 text-gray-500 cursor-move" />
 
                   <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
                     <div>
@@ -310,18 +310,18 @@ export default function CustomizationBuilder({
                         value={option.option_name}
                         onChange={(e) => updateOption(groupIndex, optionIndex, { option_name: e.target.value })}
                         placeholder="Option name"
-                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-600"
                       />
                     </div>
 
                     <div className="relative">
-                      <DollarSign className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+                      <DollarSign className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                       <input
                         type="number"
                         value={option.price_adjustment}
                         onChange={(e) => updateOption(groupIndex, optionIndex, { price_adjustment: parseFloat(e.target.value) || 0 })}
                         placeholder="Price adjustment"
-                        className="w-full pl-8 p-2 border border-gray-300 rounded-md text-sm"
+                        className="w-full pl-8 p-2 border border-gray-300 rounded-md text-sm text-gray-600"
                       />
                     </div>
 
@@ -361,7 +361,7 @@ export default function CustomizationBuilder({
 
                   <button
                     onClick={() => deleteOption(groupIndex, optionIndex)}
-                    className="p-1 text-gray-400 hover:text-red-600"
+                    className="p-1 text-gray-500 hover:text-red-600"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -370,7 +370,7 @@ export default function CustomizationBuilder({
 
               {group.options.length === 0 && (
                 <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-lg">
-                  <AlertCircle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                  <AlertCircle className="h-8 w-8 mx-auto mb-2 text-gray-500" />
                   <p className="text-sm">No options added yet</p>
                   <button
                     onClick={() => addOption(groupIndex)}
@@ -386,7 +386,7 @@ export default function CustomizationBuilder({
 
         {groups.length === 0 && (
           <div className="text-center py-8 bg-gray-50 rounded-lg">
-            <Settings className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <Settings className="h-12 w-12 mx-auto mb-4 text-gray-500" />
             <h4 className="text-lg font-medium text-gray-900 mb-2">No Customizations Yet</h4>
             <p className="text-gray-600 mb-4">Add customization groups to let customers personalize their orders</p>
             <div className="flex justify-center space-x-2">

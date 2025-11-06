@@ -82,7 +82,7 @@ export default function PromoCard({ promo, onToggleActive, onDelete, onDuplicate
                 {promo.is_active ? (
                   <ToggleRight className="h-5 w-5 text-green-600" />
                 ) : (
-                  <ToggleLeft className="h-5 w-5 text-gray-400" />
+                  <ToggleLeft className="h-5 w-5 text-gray-500" />
                 )}
               </button>
             )}

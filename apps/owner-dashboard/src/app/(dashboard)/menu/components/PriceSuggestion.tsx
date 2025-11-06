@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Calculator, Percent, DollarSign } from '@/components/ui/icons'
+import { Calculator, Percent, DollarSign } from 'lucide-react'
 import {
   PricingSuggestion,
   PricingData,
@@ -57,7 +57,7 @@ export default function PriceSuggestion({
     return (
       <div className={`p-6 bg-gray-50 rounded-xl border border-gray-200 ${className}`}>
         <div className="text-center">
-          <Calculator className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <Calculator className="h-12 w-12 text-gray-500 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Price Suggestion</h3>
           <p className="text-gray-600">
             Add ingredients and fill in preparation details to get AI-powered pricing suggestions
@@ -311,7 +311,7 @@ export default function PriceSuggestion({
         <h4 className="font-medium text-gray-900 mb-3">Or set custom price:</h4>
         <div className="flex items-center space-x-3">
           <div className="relative flex-1 max-w-xs">
-            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             <input
               type="number"
               min="0"
@@ -319,7 +319,7 @@ export default function PriceSuggestion({
               value={selectedPrice || ''}
               onChange={(e) => onPriceSelect(parseInt(e.target.value) || 0)}
               placeholder="Enter custom price"
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             />
           </div>
           <div className="text-sm text-gray-600">

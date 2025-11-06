@@ -1,1 +1,0 @@
-// Employee Portal - Dashboard main page component

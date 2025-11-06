@@ -241,7 +241,7 @@ export default function CheckoutPage() {
 
         // API client returns { data: apiResponse }, and API route returns { data: orderData }
         // So we need response.data.data (which contains the actual order data)
-        const orderData = response.data.data || response.data
+        const orderData = (response.data as any).data || response.data
         console.log('Processed orderData:', orderData)
 
         // Store order ID for payment page (order_id from POST response)
@@ -296,7 +296,7 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <ShoppingBag className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <ShoppingBag className="h-12 w-12 text-gray-500 mx-auto mb-4" />
           <h2 className="text-lg font-semibold text-gray-900 mb-2">
             Memuat Checkout
           </h2>
@@ -393,7 +393,7 @@ export default function CheckoutPage() {
                 Nomor Telepon *
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                 <input
                   type="tel"
                   value={customerInfo.phone}
@@ -428,7 +428,7 @@ export default function CheckoutPage() {
                 Catatan Khusus (Opsional)
               </label>
               <div className="relative">
-                <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                 <textarea
                   value={customerInfo.notes}
                   onChange={(e) => handleInfoChange('notes', e.target.value)}

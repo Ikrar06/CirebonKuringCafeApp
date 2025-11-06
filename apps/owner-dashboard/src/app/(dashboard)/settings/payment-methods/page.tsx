@@ -307,7 +307,7 @@ export default function PaymentMethodsPage() {
 
               {bankAccounts.length === 0 ? (
                 <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                  <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <Building2 className="h-12 w-12 text-gray-500 mx-auto mb-4" />
                   <p className="text-gray-600 mb-4">Belum ada rekening bank atau e-wallet</p>
                   <button
                     onClick={() => setShowAddModal(true)}
@@ -391,7 +391,7 @@ export default function PaymentMethodsPage() {
                   type="text"
                   value={newAccount.bank}
                   onChange={(e) => setNewAccount({ ...newAccount, bank: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-600"
                   placeholder="BCA / GoPay / OVO / DANA"
                 />
                 <p className="mt-1 text-xs text-gray-500">
@@ -407,7 +407,7 @@ export default function PaymentMethodsPage() {
                   type="text"
                   value={newAccount.name}
                   onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-600"
                   placeholder="PT Cafe Digital / Nama Pemilik"
                 />
               </div>
@@ -420,7 +420,7 @@ export default function PaymentMethodsPage() {
                   type="text"
                   value={newAccount.account}
                   onChange={(e) => setNewAccount({ ...newAccount, account: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-600"
                   placeholder="1234567890 / 08xxxxxxxxxx"
                 />
               </div>

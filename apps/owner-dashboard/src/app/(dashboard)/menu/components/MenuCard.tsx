@@ -125,7 +125,7 @@ export default function MenuCard({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <ChefHat className="h-16 w-16 text-gray-400" />
+            <ChefHat className="h-16 w-16 text-gray-500" />
           </div>
         )}
 

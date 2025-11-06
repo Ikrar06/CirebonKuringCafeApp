@@ -85,7 +85,7 @@ export default function EmployeeDetailPage() {
     return (
       <div className="p-6 max-w-7xl mx-auto">
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+          <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
         </div>
       </div>
     )
@@ -206,7 +206,7 @@ export default function EmployeeDetailPage() {
 
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
-              <User className="h-5 w-5 text-gray-400 mt-0.5" />
+              <User className="h-5 w-5 text-gray-500 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-gray-600">Full Name</p>
                 <p className="text-base font-medium text-gray-900">{employee.full_name}</p>
@@ -214,7 +214,7 @@ export default function EmployeeDetailPage() {
             </div>
 
             <div className="flex items-start space-x-3">
-              <Mail className="h-5 w-5 text-gray-400 mt-0.5" />
+              <Mail className="h-5 w-5 text-gray-500 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-gray-600">Email</p>
                 <p className="text-base font-medium text-gray-900">{employee.email}</p>
@@ -222,7 +222,7 @@ export default function EmployeeDetailPage() {
             </div>
 
             <div className="flex items-start space-x-3">
-              <Phone className="h-5 w-5 text-gray-400 mt-0.5" />
+              <Phone className="h-5 w-5 text-gray-500 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-gray-600">Phone Number</p>
                 <p className="text-base font-medium text-gray-900">{employee.phone || '-'}</p>
@@ -231,7 +231,7 @@ export default function EmployeeDetailPage() {
 
             {employee.address && (
               <div className="flex items-start space-x-3">
-                <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
+                <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-sm text-gray-600">Address</p>
                   <p className="text-base font-medium text-gray-900">{employee.address}</p>
@@ -240,14 +240,14 @@ export default function EmployeeDetailPage() {
             )}
 
             <div className="flex items-start space-x-3">
-              <MessageSquare className="h-5 w-5 text-gray-400 mt-0.5" />
+              <MessageSquare className="h-5 w-5 text-gray-500 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-gray-600">Telegram</p>
                 <p className="text-base font-medium text-gray-900">
                   {employee.telegram_chat_id ? (
                     <span className="text-green-600">Connected</span>
                   ) : (
-                    <span className="text-gray-400">Not connected</span>
+                    <span className="text-gray-500">Not connected</span>
                   )}
                 </p>
               </div>
@@ -261,7 +261,7 @@ export default function EmployeeDetailPage() {
 
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
-              <Briefcase className="h-5 w-5 text-gray-400 mt-0.5" />
+              <Briefcase className="h-5 w-5 text-gray-500 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-gray-600">Position</p>
                 <p className="text-base font-medium text-gray-900">
@@ -271,7 +271,7 @@ export default function EmployeeDetailPage() {
             </div>
 
             <div className="flex items-start space-x-3">
-              <DollarSign className="h-5 w-5 text-gray-400 mt-0.5" />
+              <DollarSign className="h-5 w-5 text-gray-500 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-gray-600">Salary</p>
                 <p className="text-base font-medium text-gray-900">
@@ -283,7 +283,7 @@ export default function EmployeeDetailPage() {
 
             {employee.hire_date && (
               <div className="flex items-start space-x-3">
-                <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
+                <Calendar className="h-5 w-5 text-gray-500 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-sm text-gray-600">Hire Date</p>
                   <p className="text-base font-medium text-gray-900">
@@ -298,7 +298,7 @@ export default function EmployeeDetailPage() {
             )}
 
             <div className="flex items-start space-x-3">
-              <UserCheck className="h-5 w-5 text-gray-400 mt-0.5" />
+              <UserCheck className="h-5 w-5 text-gray-500 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-gray-600">Joined Since</p>
                 <p className="text-base font-medium text-gray-900">

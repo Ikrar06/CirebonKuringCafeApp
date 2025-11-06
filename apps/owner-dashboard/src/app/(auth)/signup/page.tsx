@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2, Shield, User, Phone, Store } from '@/components/ui/icons'
+import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2, Shield, Users, Phone, Building2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const supabase = createClient()
@@ -179,7 +179,7 @@ export default function SignUpPage() {
                   Nama Lengkap <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     id="name"
                     name="name"
@@ -187,7 +187,7 @@ export default function SignUpPage() {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="John Doe"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     disabled={isLoading}
                     required
                   />
@@ -200,7 +200,7 @@ export default function SignUpPage() {
                   Email <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     id="email"
                     name="email"
@@ -208,7 +208,7 @@ export default function SignUpPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="owner@cafekita.com"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     disabled={isLoading}
                     required
                   />
@@ -221,7 +221,7 @@ export default function SignUpPage() {
                   Nomor Telepon
                 </label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     id="phone"
                     name="phone"
@@ -229,7 +229,7 @@ export default function SignUpPage() {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="08123456789"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     disabled={isLoading}
                   />
                 </div>
@@ -241,7 +241,7 @@ export default function SignUpPage() {
                   Nama Cafe
                 </label>
                 <div className="relative">
-                  <Store className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     id="cafeName"
                     name="cafeName"
@@ -249,7 +249,7 @@ export default function SignUpPage() {
                     value={formData.cafeName}
                     onChange={handleInputChange}
                     placeholder="Cafe Kita"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     disabled={isLoading}
                   />
                 </div>
@@ -268,7 +268,7 @@ export default function SignUpPage() {
                 onChange={handleInputChange}
                 placeholder="Jl. Contoh No. 123, Kota"
                 rows={2}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                 disabled={isLoading}
               />
             </div>
@@ -280,7 +280,7 @@ export default function SignUpPage() {
                   Password <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     id="password"
                     name="password"
@@ -288,14 +288,14 @@ export default function SignUpPage() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     disabled={isLoading}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-600"
                     disabled={isLoading}
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -309,7 +309,7 @@ export default function SignUpPage() {
                   Konfirmasi Password <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
@@ -317,14 +317,14 @@ export default function SignUpPage() {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     disabled={isLoading}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-600"
                     disabled={isLoading}
                   >
                     {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}

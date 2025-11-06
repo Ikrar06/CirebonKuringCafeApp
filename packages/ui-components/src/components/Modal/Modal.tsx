@@ -279,7 +279,7 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(
         {showClose && onClose && (
           <button
             onClick={onClose}
-            className="ml-4 rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            className="ml-4 rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-600 transition-colors"
             aria-label="Close modal"
           >
             <svg

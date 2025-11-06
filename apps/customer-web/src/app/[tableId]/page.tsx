@@ -477,7 +477,7 @@ export default function MenuPage() {
         <div className="px-4 py-4">
           <div className="flex items-center space-x-3 mb-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <input
                 type="text"
                 placeholder="Cari menu favorit..."
@@ -511,7 +511,7 @@ export default function MenuPage() {
                 border-gray-200 
                 ${isOnline && !isLoadingMenu 
                   ? 'hover:bg-gray-50 text-gray-600' 
-                  : 'text-gray-400 cursor-not-allowed'
+                  : 'text-gray-500 cursor-not-allowed'
                 }
                 transition-colors
               `}
@@ -652,7 +652,7 @@ export default function MenuPage() {
                   ))
                 ) : (
                   <div className="text-center py-12">
-                    <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <Search className="h-12 w-12 text-gray-500 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">
                       Tidak ada menu ditemukan
                     </h3>

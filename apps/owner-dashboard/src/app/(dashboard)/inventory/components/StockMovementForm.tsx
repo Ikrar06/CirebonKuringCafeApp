@@ -132,7 +132,7 @@ export default function StockMovementForm({ onClose, onSuccess }: StockMovementF
           <h2 className="text-xl font-bold text-gray-900">Record Stock Movement</h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+            className="p-2 text-gray-500 hover:text-gray-600 rounded-lg hover:bg-gray-100"
           >
             <X className="h-5 w-5" />
           </button>
@@ -202,7 +202,7 @@ export default function StockMovementForm({ onClose, onSuccess }: StockMovementF
                 step="0.01"
                 value={formData.quantity || ''}
                 onChange={(e) => setFormData({ ...formData, quantity: parseFloat(e.target.value) || 0 })}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                   errors.quantity ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="0.00"
@@ -220,7 +220,7 @@ export default function StockMovementForm({ onClose, onSuccess }: StockMovementF
                 type="text"
                 value={formData.unit}
                 onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 text-gray-600"
                 placeholder="kg, liter, pieces"
                 readOnly
               />
@@ -264,7 +264,7 @@ export default function StockMovementForm({ onClose, onSuccess }: StockMovementF
                 step="0.01"
                 value={formData.unit_cost || ''}
                 onChange={(e) => setFormData({ ...formData, unit_cost: parseFloat(e.target.value) || 0 })}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                   errors.unit_cost ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="0.00"
@@ -295,7 +295,7 @@ export default function StockMovementForm({ onClose, onSuccess }: StockMovementF
                   type="text"
                   value={formData.batch_number}
                   onChange={(e) => setFormData({ ...formData, batch_number: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                   placeholder="BATCH-001"
                 />
               </div>
@@ -324,7 +324,7 @@ export default function StockMovementForm({ onClose, onSuccess }: StockMovementF
                 type="text"
                 value={formData.reason}
                 onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                   errors.reason ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="e.g., Spoiled, Expired, Inventory count correction"
@@ -344,7 +344,7 @@ export default function StockMovementForm({ onClose, onSuccess }: StockMovementF
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
               placeholder="Additional information..."
             />
           </div>

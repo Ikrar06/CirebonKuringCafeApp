@@ -347,7 +347,7 @@ export default function ProofUpload({
         >
           <div className="space-y-4">
             <div className="mx-auto w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-              <Upload className="h-8 w-8 text-gray-400" />
+              <Upload className="h-8 w-8 text-gray-500" />
             </div>
             
             <div>
@@ -678,7 +678,7 @@ export function UploadStatus({ status, progress = 0, message }: UploadStatusProp
       case 'error':
         return <AlertCircle className="h-4 w-4 text-red-600" />
       default:
-        return <Upload className="h-4 w-4 text-gray-400" />
+        return <Upload className="h-4 w-4 text-gray-500" />
     }
   }
 

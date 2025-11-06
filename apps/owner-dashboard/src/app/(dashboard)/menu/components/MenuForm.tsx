@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Save, Camera, X } from '@/components/ui/icons'
+import { Save, Camera, X } from 'lucide-react'
 import { CreateMenuItemData, CustomizationGroup } from '@/services/menuService'
 import { useMenuStore } from '@/stores/menuStore'
 import IngredientsSelector from './IngredientsSelector'
@@ -274,7 +274,7 @@ export default function MenuForm({
               type="text"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                 errors.name ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="Enter menu item name"
@@ -312,7 +312,7 @@ export default function MenuForm({
             value={formData.description || ''}
             onChange={(e) => handleInputChange('description', e.target.value)}
             rows={3}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
               errors.description ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="Describe your menu item..."
@@ -330,7 +330,7 @@ export default function MenuForm({
               min="1"
               value={formData.estimated_prep_time || ''}
               onChange={(e) => handleInputChange('estimated_prep_time', parseInt(e.target.value) || 0)}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                 errors.estimated_prep_time ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="15"
@@ -376,7 +376,7 @@ export default function MenuForm({
           </div>
         ) : (
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-            <Camera className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <Camera className="h-12 w-12 text-gray-500 mx-auto mb-4" />
             <p className="text-gray-600 mb-4">Upload a photo of your menu item</p>
             <input
               type="file"
@@ -473,7 +473,7 @@ export default function MenuForm({
               min="0"
               value={formData.calories || ''}
               onChange={(e) => handleInputChange('calories', parseInt(e.target.value) || 0)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
               placeholder="250"
             />
           </div>
@@ -488,7 +488,7 @@ export default function MenuForm({
               max="5"
               value={formData.spicy_level || ''}
               onChange={(e) => handleInputChange('spicy_level', parseInt(e.target.value) || 0)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
               placeholder="0"
             />
           </div>

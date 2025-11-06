@@ -29,13 +29,22 @@ interface ShiftForm {
   notes: string
 }
 
+// Helper to get local date in YYYY-MM-DD format (Indonesia timezone)
+const getLocalDateString = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export default function CreateShiftPage() {
   const router = useRouter()
   const [employees, setEmployees] = useState<Employee[]>([])
   const [shifts, setShifts] = useState<ShiftForm[]>([
     {
       employee_id: '',
-      date: new Date().toISOString().split('T')[0],
+      date: getLocalDateString(),
       shift_start: '08:00',
       shift_end: '17:00',
       break_duration: 60,
@@ -65,7 +74,7 @@ export default function CreateShiftPage() {
       ...shifts,
       {
         employee_id: '',
-        date: shifts[0]?.date || new Date().toISOString().split('T')[0],
+        date: shifts[0]?.date || getLocalDateString(),
         shift_start: shifts[0]?.shift_start || '08:00',
         shift_end: shifts[0]?.shift_end || '17:00',
         break_duration: shifts[0]?.break_duration || 60,
@@ -98,6 +107,17 @@ export default function CreateShiftPage() {
       alert('Please select an employee for all shifts')
       return
     }
+
+    // Check for duplicate employee on same date
+    const duplicates = new Map<string, number>()
+    shifts.forEach((shift, index) => {
+      const key = `${shift.employee_id}-${shift.date}`
+      if (duplicates.has(key)) {
+        alert(`Duplicate shift detected: Employee cannot have multiple shifts on the same date (Shift #${duplicates.get(key)! + 1} and Shift #${index + 1})`)
+        throw new Error('Duplicate shift')
+      }
+      duplicates.set(key, index)
+    })
 
     setIsSubmitting(true)
     try {
@@ -226,7 +246,7 @@ export default function CreateShiftPage() {
                       Date *
                     </label>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                       <input
                         type="date"
                         value={shift.date}
@@ -243,7 +263,7 @@ export default function CreateShiftPage() {
                       Shift Start *
                     </label>
                     <div className="relative">
-                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                       <input
                         type="time"
                         value={shift.shift_start}
@@ -260,7 +280,7 @@ export default function CreateShiftPage() {
                       Shift End *
                     </label>
                     <div className="relative">
-                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                       <input
                         type="time"
                         value={shift.shift_end}
@@ -296,7 +316,7 @@ export default function CreateShiftPage() {
                       value={shift.notes}
                       onChange={(e) => updateShift(index, 'notes', e.target.value)}
                       placeholder="e.g., Morning shift"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                     />
                   </div>
                 </div>

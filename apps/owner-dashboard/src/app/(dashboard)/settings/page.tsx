@@ -240,7 +240,7 @@ export default function SettingsPage() {
                   </p>
                 </div>
 
-                <div className="flex items-center text-sm font-medium text-gray-400 group-hover:text-blue-600 transition-colors">
+                <div className="flex items-center text-sm font-medium text-gray-500 group-hover:text-blue-600 transition-colors">
                   <span>Buka Pengaturan</span>
                   <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
                 </div>

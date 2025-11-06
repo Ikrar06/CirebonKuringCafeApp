@@ -140,7 +140,7 @@ export default function PromoDetailPage() {
               </>
             ) : (
               <>
-                <ToggleLeft className="h-4 w-4 text-gray-400" />
+                <ToggleLeft className="h-4 w-4 text-gray-500" />
                 Inactive
               </>
             )}

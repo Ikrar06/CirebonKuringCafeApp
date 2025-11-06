@@ -69,7 +69,7 @@ export default function HomePage() {
                 Nomor Meja
               </label>
               <div className="relative">
-                <Hash className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <Hash className="absolute left-3 top-3 w-5 h-5 text-gray-500" />
                 <input
                   type="text"
                   value={tableNumber}

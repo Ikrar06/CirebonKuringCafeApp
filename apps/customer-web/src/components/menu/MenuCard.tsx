@@ -206,7 +206,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
 
   // Get spice level indicator
   const getSpiceLevelColor = (level?: number) => {
-    if (!level) return 'text-gray-400'
+    if (!level) return 'text-gray-500'
     if (level === 1) return 'text-green-500'
     if (level === 2) return 'text-yellow-500'
     if (level === 3) return 'text-orange-500'
@@ -240,7 +240,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
                     sizes="80px"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  <div className="w-full h-full flex items-center justify-center text-gray-500">
                     <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                     </svg>
@@ -389,7 +389,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
                             py-2
                             text-sm
                             font-medium
-                            text-gray-400
+                            text-gray-500
                             border
                             border-gray-300
                             rounded-lg
@@ -416,7 +416,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
                               border-blue-600
                               rounded-lg
                               hover:bg-blue-50
-                              disabled:text-gray-400
+                              disabled:text-gray-500
                               disabled:border-gray-300
                               disabled:cursor-not-allowed
                               transition-colors
@@ -475,7 +475,7 @@ export default function MenuCard({ item, tableId }: MenuCardProps) {
                     </span>
                   ))}
                   {item.tags.length > 3 && (
-                    <span className="px-2 py-1 text-xs text-gray-400">
+                    <span className="px-2 py-1 text-xs text-gray-500">
                       +{item.tags.length - 3}
                     </span>
                   )}

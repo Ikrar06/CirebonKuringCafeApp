@@ -294,3 +294,57 @@ export async function PATCH(request: NextRequest) {
     )
   }
 }
+
+// DELETE - Delete payroll record (only if pending)
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const payrollId = searchParams.get('id')
+
+    if (!payrollId) {
+      return NextResponse.json(
+        { error: 'Missing payroll id' },
+        { status: 400 }
+      )
+    }
+
+    // Check if payroll exists and is pending
+    const { data: payroll, error: checkError } = await supabase
+      .from('payroll')
+      .select('payment_status')
+      .eq('id', payrollId)
+      .single()
+
+    if (checkError || !payroll) {
+      return NextResponse.json(
+        { error: 'Payroll not found' },
+        { status: 404 }
+      )
+    }
+
+    if (payroll.payment_status !== 'pending') {
+      return NextResponse.json(
+        { error: 'Can only delete pending payroll records' },
+        { status: 400 }
+      )
+    }
+
+    const { error } = await supabase
+      .from('payroll')
+      .delete()
+      .eq('id', payrollId)
+
+    if (error) {
+      console.error('Error deleting payroll:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ message: 'Payroll deleted successfully' })
+  } catch (error: any) {
+    console.error('API error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}

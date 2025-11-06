@@ -65,7 +65,7 @@ export default function PredictionWidget({ ingredientIds, limit = 10, className 
     return (
       <div className={`bg-white border border-gray-200 rounded-xl p-6 ${className}`}>
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+          <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
         </div>
       </div>
     )
@@ -75,7 +75,7 @@ export default function PredictionWidget({ ingredientIds, limit = 10, className 
     return (
       <div className={`bg-white border border-gray-200 rounded-xl p-6 ${className}`}>
         <div className="flex items-start space-x-3">
-          <AlertCircle className="h-6 w-6 text-gray-400 flex-shrink-0 mt-1" />
+          <AlertCircle className="h-6 w-6 text-gray-500 flex-shrink-0 mt-1" />
           <div>
             <h3 className="text-lg font-semibold text-gray-900">No Predictions Available</h3>
             <p className="text-sm text-gray-600 mt-1">

@@ -215,7 +215,7 @@ export default function OrdersPage() {
               {recentOrders.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center">
-                    <ChefHat className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <ChefHat className="h-12 w-12 text-gray-500 mx-auto mb-4" />
                     <p className="text-gray-500">No orders yet</p>
                   </td>
                 </tr>

@@ -343,7 +343,7 @@ export default function TablesManagementPage() {
                   type="text"
                   value={formData.table_number}
                   onChange={(e) => setFormData({ ...formData, table_number: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-600"
                   placeholder="1"
                 />
               </div>
@@ -356,7 +356,7 @@ export default function TablesManagementPage() {
                   type="number"
                   value={formData.capacity}
                   onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-600"
                   placeholder="4"
                 />
               </div>
@@ -384,7 +384,7 @@ export default function TablesManagementPage() {
                   type="text"
                   value={formData.floor}
                   onChange={(e) => setFormData({ ...formData, floor: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-600"
                   placeholder="1"
                 />
               </div>
@@ -397,7 +397,7 @@ export default function TablesManagementPage() {
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-600"
                   placeholder="Catatan tambahan (opsional)"
                 />
               </div>

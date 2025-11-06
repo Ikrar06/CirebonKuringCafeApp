@@ -225,7 +225,7 @@ export default function MenuPerformance({ dateRange }: MenuPerformanceProps) {
                         </div>
 
                         {/* Expand Icon */}
-                        <div className="text-gray-400">
+                        <div className="text-gray-500">
                           {isExpanded ? (
                             <ChevronUp className="h-5 w-5" />
                           ) : (

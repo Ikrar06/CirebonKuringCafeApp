@@ -25,7 +25,8 @@ interface AttendanceRecord {
   clock_in_location?: string
   clock_out_location?: string
   status: 'present' | 'late' | 'absent' | 'on_leave'
-  work_hours: number
+  regular_hours: number
+  total_hours: number
   overtime_hours: number
   notes?: string
 }
@@ -96,8 +97,8 @@ export default function EmployeeAttendancePage() {
     late: attendance.filter(a => a.status === 'late').length,
     absent: attendance.filter(a => a.status === 'absent').length,
     onLeave: attendance.filter(a => a.status === 'on_leave').length,
-    totalHours: attendance.reduce((sum, a) => sum + a.work_hours, 0),
-    overtimeHours: attendance.reduce((sum, a) => sum + a.overtime_hours, 0)
+    totalHours: attendance.reduce((sum, a) => sum + (a.total_hours || 0), 0),
+    overtimeHours: attendance.reduce((sum, a) => sum + (a.overtime_hours || 0), 0)
   }
 
   const getStatusColor = (status: string) => {
@@ -137,14 +138,15 @@ export default function EmployeeAttendancePage() {
 
   const handleExport = () => {
     // Export attendance data to CSV
-    const headers = ['Date', 'Clock In', 'Clock Out', 'Status', 'Work Hours', 'Overtime Hours', 'Notes']
+    const headers = ['Date', 'Clock In', 'Clock Out', 'Status', 'Regular Hours', 'Total Hours', 'Overtime Hours', 'Notes']
     const rows = filteredAttendance.map(record => [
       record.date,
       record.clock_in || '-',
       record.clock_out || '-',
       getStatusLabel(record.status),
-      record.work_hours.toFixed(2),
-      record.overtime_hours.toFixed(2),
+      (record.regular_hours || 0).toFixed(2),
+      (record.total_hours || 0).toFixed(2),
+      (record.overtime_hours || 0).toFixed(2),
       record.notes || '-'
     ])
 
@@ -162,7 +164,7 @@ export default function EmployeeAttendancePage() {
     return (
       <div className="p-6 max-w-7xl mx-auto">
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+          <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
         </div>
       </div>
     )
@@ -184,9 +186,9 @@ export default function EmployeeAttendancePage() {
             <p className="text-gray-600 flex items-center space-x-2">
               <User className="h-4 w-4" />
               <span>{employee.full_name}</span>
-              <span className="text-gray-400">•</span>
+              <span className="text-gray-500">•</span>
               <span className="capitalize">{employee.position}</span>
-              <span className="text-gray-400">•</span>
+              <span className="text-gray-500">•</span>
               <span className="text-sm">{employee.employee_code}</span>
             </p>
           </div>
@@ -235,7 +237,7 @@ export default function EmployeeAttendancePage() {
       <div className="bg-white border border-gray-200 rounded-xl p-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0 md:space-x-4">
           <div className="flex items-center space-x-4 flex-1">
-            <Filter className="h-5 w-5 text-gray-400" />
+            <Filter className="h-5 w-5 text-gray-500" />
             <input
               type="month"
               value={filterMonth}
@@ -245,7 +247,7 @@ export default function EmployeeAttendancePage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
             >
               <option value="">All Status</option>
               <option value="present">Present Only</option>
@@ -278,7 +280,7 @@ export default function EmployeeAttendancePage() {
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+            <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
           </div>
         ) : filteredAttendance.length === 0 ? (
           <div className="text-center py-12">
@@ -315,31 +317,31 @@ export default function EmployeeAttendancePage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-900 flex items-center">
-                        <Clock className="h-4 w-4 mr-1 text-gray-400" />
+                        <Clock className="h-4 w-4 mr-1 text-gray-500" />
                         {record.clock_in || '-'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-900 flex items-center">
-                        <Clock className="h-4 w-4 mr-1 text-gray-400" />
+                        <Clock className="h-4 w-4 mr-1 text-gray-500" />
                         {record.clock_out || '-'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       {record.clock_in_location ? (
                         <div className="text-xs text-gray-600 flex items-center">
-                          <MapPin className="h-3 w-3 mr-1 text-gray-400" />
+                          <MapPin className="h-3 w-3 mr-1 text-gray-500" />
                           <span className="truncate max-w-[150px]" title={record.clock_in_location}>
                             {record.clock_in_location}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-xs text-gray-400">-</span>
+                        <span className="text-xs text-gray-500">-</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900">
-                        {record.work_hours.toFixed(1)}h
+                        {(record.total_hours || 0).toFixed(1)}h
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -348,7 +350,7 @@ export default function EmployeeAttendancePage() {
                           +{record.overtime_hours.toFixed(1)}h
                         </div>
                       ) : (
-                        <span className="text-xs text-gray-400">-</span>
+                        <span className="text-xs text-gray-500">-</span>
                       )}
                     </td>
                     <td className="px-6 py-4">

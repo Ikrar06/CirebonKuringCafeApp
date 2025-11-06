@@ -122,7 +122,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
           <h2 className="text-xl font-bold text-gray-900">Add New Supplier</h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+            className="p-2 text-gray-500 hover:text-gray-600 rounded-lg hover:bg-gray-100"
           >
             <X className="h-5 w-5" />
           </button>
@@ -150,7 +150,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
                   type="text"
                   value={formData.company_name}
                   onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                     errors.company_name ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="ABC Food Distributor"
@@ -168,7 +168,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
                   type="text"
                   value={formData.contact_person}
                   onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                   placeholder="John Doe"
                 />
               </div>
@@ -205,7 +205,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
                   type="tel"
                   value={formData.phone_primary}
                   onChange={(e) => setFormData({ ...formData, phone_primary: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                     errors.phone_primary ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="08123456789"
@@ -223,7 +223,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
                   type="tel"
                   value={formData.phone_secondary}
                   onChange={(e) => setFormData({ ...formData, phone_secondary: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                   placeholder="08123456789"
                 />
               </div>
@@ -236,7 +236,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600 ${
                     errors.email ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="supplier@example.com"
@@ -254,7 +254,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   rows={2}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                   placeholder="Street address"
                 />
               </div>
@@ -267,7 +267,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
                   type="text"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                   placeholder="Jakarta"
                 />
               </div>
@@ -280,7 +280,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
                   type="text"
                   value={formData.tax_id}
                   onChange={(e) => setFormData({ ...formData, tax_id: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue- text-gray-600"
                   placeholder="00.000.000.0-000.000"
                 />
               </div>
@@ -335,7 +335,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
                   type="text"
                   value={formData.bank_name}
                   onChange={(e) => setFormData({ ...formData, bank_name: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                   placeholder="Bank Mandiri"
                 />
               </div>
@@ -348,7 +348,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
                   type="text"
                   value={formData.bank_account}
                   onChange={(e) => setFormData({ ...formData, bank_account: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                   placeholder="1234567890"
                 />
               </div>
@@ -429,7 +429,7 @@ export default function AddSupplierForm({ onClose, onSuccess }: AddSupplierFormP
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
               placeholder="Additional information..."
             />
           </div>

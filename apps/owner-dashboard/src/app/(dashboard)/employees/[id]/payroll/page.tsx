@@ -119,7 +119,7 @@ export default function EmployeePayrollPage() {
     return (
       <div className="p-6 max-w-7xl mx-auto">
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+          <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
         </div>
       </div>
     )
@@ -141,9 +141,9 @@ export default function EmployeePayrollPage() {
             <p className="text-gray-600 flex items-center space-x-2">
               <User className="h-4 w-4" />
               <span>{employee.full_name}</span>
-              <span className="text-gray-400">•</span>
+              <span className="text-gray-500">•</span>
               <span className="capitalize">{employee.position}</span>
-              <span className="text-gray-400">•</span>
+              <span className="text-gray-500">•</span>
               <span className="text-sm">{employee.employee_code}</span>
             </p>
           </div>
@@ -201,7 +201,7 @@ export default function EmployeePayrollPage() {
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+            <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
           </div>
         ) : payrollRecords.length === 0 ? (
           <div className="text-center py-12">
@@ -253,7 +253,7 @@ export default function EmployeePayrollPage() {
                           -{formatCurrency(record.deductions)}
                         </div>
                       ) : (
-                        <div className="text-sm text-gray-400">-</div>
+                        <div className="text-sm text-gray-500">-</div>
                       )}
                     </td>
                     <td className="px-6 py-4">

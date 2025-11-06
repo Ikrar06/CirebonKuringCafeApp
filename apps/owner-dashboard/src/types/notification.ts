@@ -1,1 +1,0 @@
-// Owner Dashboard - Notification type definitions and interfaces

@@ -45,7 +45,7 @@ export default function PieChart({
   if (!data || data.length === 0) {
     return (
       <div className={`flex items-center justify-center ${className}`} style={{ width: size, height: size }}>
-        <p className="text-gray-400">No data available</p>
+        <p className="text-gray-500">No data available</p>
       </div>
     )
   }

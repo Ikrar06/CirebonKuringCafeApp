@@ -136,7 +136,7 @@ export default function ExpiryTracker({ className = '' }: ExpiryTrackerProps) {
           <div className="text-center py-8">
             <Package className="h-12 w-12 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500 text-sm">No items expiring soon</p>
-            <p className="text-gray-400 text-xs mt-1">All stock is fresh!</p>
+            <p className="text-gray-500 text-xs mt-1">All stock is fresh!</p>
           </div>
         ) : (
           <div className="space-y-3">

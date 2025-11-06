@@ -293,7 +293,7 @@ export default function LiveOrdersPage() {
       {/* Empty State */}
       {!isLoading && orders.length === 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <ChefHat className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <ChefHat className="h-16 w-16 text-gray-500 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-900 mb-2">No Active Orders</h3>
           <p className="text-gray-600 mb-6">
             All orders have been completed. New orders will appear here automatically.

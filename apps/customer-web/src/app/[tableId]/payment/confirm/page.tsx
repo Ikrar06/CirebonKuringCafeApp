@@ -325,7 +325,7 @@ export default function PaymentConfirmPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <Clock className="h-16 w-16 text-gray-400 mx-auto mb-4 animate-spin" />
+          <Clock className="h-16 w-16 text-gray-500 mx-auto mb-4 animate-spin" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Memuat Data Pembayaran
           </h2>
@@ -341,7 +341,7 @@ export default function PaymentConfirmPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <CreditCard className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <CreditCard className="h-16 w-16 text-gray-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Data Pembayaran Tidak Ditemukan
           </h2>
@@ -439,7 +439,7 @@ export default function PaymentConfirmPage() {
               Scan QR Code QRIS
             </h3>
             <div className="bg-gray-100 p-6 rounded-lg mb-4">
-              <QrCode className="h-32 w-32 text-gray-400 mx-auto mb-3" />
+              <QrCode className="h-32 w-32 text-gray-500 mx-auto mb-3" />
               <p className="text-sm font-medium text-gray-700">QR Code Statis Cirebon Kuring Cafe</p>
             </div>
 
@@ -626,7 +626,7 @@ export default function PaymentConfirmPage() {
                   onClick={() => fileInputRef.current?.click()}
                   className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
                 >
-                  <FileImage className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                  <FileImage className="h-12 w-12 text-gray-500 mx-auto mb-3" />
                   <p className="text-gray-600 mb-2">Pilih foto bukti pembayaran</p>
                   <p className="text-xs text-gray-500">JPG, PNG (Max 5MB)</p>
                 </div>

@@ -57,9 +57,10 @@ export default function AddEmployeePage() {
         <h3 className="text-sm font-semibold text-blue-900 mb-2">Important Information</h3>
         <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
           <li>A user account will be created automatically with the provided email and password</li>
-          <li>The employee will be able to log in using their email and password</li>
+          <li><strong>Username</strong> will be used for Employee Portal login (e.g., employee logs in with username, not email)</li>
+          <li>Employee will be required to change their password on first login to Employee Portal</li>
           <li>You can set their Telegram Chat ID now or add it later for notifications</li>
-          <li>Make sure to communicate the login credentials to the employee securely</li>
+          <li>Make sure to communicate the login credentials (username and temporary password) to the employee securely</li>
         </ul>
       </div>
 

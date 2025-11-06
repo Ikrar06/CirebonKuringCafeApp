@@ -1,1 +1,0 @@
-// Owner Dashboard - User type definitions and interfaces

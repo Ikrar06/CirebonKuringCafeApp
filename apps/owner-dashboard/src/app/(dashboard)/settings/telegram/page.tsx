@@ -182,7 +182,7 @@ export default function TelegramSettingsPage() {
                 type="text"
                 value={config.botToken}
                 onChange={(e) => handleChange('botToken', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-sm text-gray-600"
                 placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
               />
               <p className="mt-2 text-xs text-gray-500">
@@ -199,7 +199,7 @@ export default function TelegramSettingsPage() {
                 type="text"
                 value={config.chatId}
                 onChange={(e) => handleChange('chatId', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-sm text-gray-600"
                 placeholder="-1001234567890"
               />
               <p className="mt-2 text-xs text-gray-500">

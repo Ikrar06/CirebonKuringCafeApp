@@ -117,7 +117,7 @@ function DashboardContent({ children }: DashboardLayoutProps) {
                       {user.email}
                     </p>
                   </div>
-                  <ChevronDown className="h-4 w-4 text-gray-400" />
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
                 </button>
 
                 {/* User Menu Dropdown */}

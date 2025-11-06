@@ -272,7 +272,7 @@ export default function RealtimeMetrics({ className = '' }: RealtimeMetricsProps
             ) : (
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <ClipboardList className="h-8 w-8 text-gray-400" />
+                  <ClipboardList className="h-8 w-8 text-gray-500" />
                 </div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-2">Belum ada pesanan</h4>
                 <p className="text-gray-600">Pesanan akan muncul di sini secara otomatis</p>
@@ -307,7 +307,7 @@ export default function RealtimeMetrics({ className = '' }: RealtimeMetricsProps
             <p className="text-sm text-gray-600 mb-2">Status Meja</p>
             <div className="flex items-baseline space-x-2 mb-3">
               <span className="text-4xl font-bold text-gray-900">{metrics?.activeTables || 0}</span>
-              <span className="text-lg text-gray-400">/ {metrics?.totalTables || 0}</span>
+              <span className="text-lg text-gray-500">/ {metrics?.totalTables || 0}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div

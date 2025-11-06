@@ -181,7 +181,7 @@ export default function InventoryAlertsPage() {
                   step="1"
                   value={alerts.expiry_warning_days}
                   onChange={(e) => setAlerts({ ...alerts, expiry_warning_days: parseInt(e.target.value) || 7 })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                   placeholder="7"
                 />
                 <p className="mt-2 text-sm text-gray-600">
@@ -239,7 +239,7 @@ export default function InventoryAlertsPage() {
                     step="5"
                     value={alerts.low_stock_percentage}
                     onChange={(e) => setAlerts({ ...alerts, low_stock_percentage: parseInt(e.target.value) || 20 })}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                     placeholder="20"
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">

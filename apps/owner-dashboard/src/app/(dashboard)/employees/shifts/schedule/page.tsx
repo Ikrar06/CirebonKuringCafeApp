@@ -330,7 +330,7 @@ export default function WeeklySchedulePage() {
       {/* Schedule Grid */}
       {isLoading ? (
         <div className="bg-white border border-gray-200 rounded-xl p-12 flex items-center justify-center">
-          <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
+          <RefreshCw className="h-8 w-8 text-gray-500 animate-spin" />
         </div>
       ) : (
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
@@ -344,7 +344,7 @@ export default function WeeklySchedulePage() {
                   {weekDays.map((date, index) => (
                     <th key={index} className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase min-w-[180px]">
                       <div>{getDayName(index)}</div>
-                      <div className="text-gray-400 font-normal">{formatDate(date)}</div>
+                      <div className="text-gray-500 font-normal">{formatDate(date)}</div>
                     </th>
                   ))}
                 </tr>

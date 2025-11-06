@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Plus, X, Calculator } from '@/components/ui/icons'
+import { Search, Plus, X, Calculator } from 'lucide-react'
 import { IngredientCost } from '@/services/pricingService'
 import { Ingredient, ingredientService } from '@/services/ingredientService'
 
@@ -109,13 +109,13 @@ export default function IngredientsSelector({
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
         <input
           type="text"
           placeholder="Search ingredients..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
         />
         {isLoading && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -154,7 +154,7 @@ export default function IngredientsSelector({
                         value={ingredient.quantity}
                         onChange={(e) => updateIngredientQuantity(ingredient.id, parseFloat(e.target.value))}
                         onFocus={(e) => e.target.select()}
-                        className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-600"
                         placeholder="0"
                       />
                       <span className="text-sm text-gray-600">{ingredient.unit}</span>

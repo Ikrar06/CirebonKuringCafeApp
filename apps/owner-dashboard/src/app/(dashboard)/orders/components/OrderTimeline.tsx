@@ -102,7 +102,7 @@ export default function OrderTimeline({ order }: OrderTimelineProps) {
       case 'cancelled':
         return 'text-red-600 bg-red-100'
       default:
-        return 'text-gray-400 bg-gray-100'
+        return 'text-gray-500 bg-gray-100'
     }
   }
 

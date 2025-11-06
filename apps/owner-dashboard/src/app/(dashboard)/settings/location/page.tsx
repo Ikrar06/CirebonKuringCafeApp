@@ -244,7 +244,7 @@ export default function LocationSettingsPage() {
                     step="0.000001"
                     value={locationData.lat}
                     onChange={(e) => setLocationData({ ...locationData, lat: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-mono"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-mono text-gray-600"
                     placeholder="-6.917464"
                   />
                 </div>
@@ -258,7 +258,7 @@ export default function LocationSettingsPage() {
                     step="0.000001"
                     value={locationData.lng}
                     onChange={(e) => setLocationData({ ...locationData, lng: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-mono"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-mono text-gray-600"
                     placeholder="107.619123"
                   />
                 </div>
@@ -314,7 +314,7 @@ export default function LocationSettingsPage() {
                   step="10"
                   value={locationData.radius}
                   onChange={(e) => setLocationData({ ...locationData, radius: parseInt(e.target.value) || 100 })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600"
                   placeholder="100"
                 />
                 <p className="mt-2 text-sm text-gray-600">

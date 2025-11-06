@@ -1,1 +1,0 @@
-// Employee Portal - Employee profile page component
