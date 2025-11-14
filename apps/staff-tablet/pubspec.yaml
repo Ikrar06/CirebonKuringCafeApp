@@ -18,6 +18,8 @@ dependencies:
   shared_preferences: ^2.2.0
   connectivity_plus: ^5.0.0
   permission_handler: ^11.0.0
+  dartz: ^0.10.1
+  supabase_flutter: ^2.10.3
 
 dev_dependencies:
   flutter_test:

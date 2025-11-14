@@ -193,7 +193,10 @@ supabase/supabase-openapi.json
 *.sqlite
 *.sqlite3
 *.db
-data/
+# Ignore database data folders, but not source code data layers
+/data/
+**/database/data/
+**/db/data/
 
 # ================== CERTIFICATES ==================
 *.pem
