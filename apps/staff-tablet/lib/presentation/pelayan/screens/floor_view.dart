@@ -1,1 +1,0 @@
-// Floor view screen

@@ -1,1 +1,0 @@
-// Table management screen

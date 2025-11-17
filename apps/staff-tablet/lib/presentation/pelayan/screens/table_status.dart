@@ -1,1 +1,0 @@
-// Table status screen

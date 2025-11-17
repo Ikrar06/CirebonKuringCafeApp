@@ -5,8 +5,17 @@ import '../features/auth/presentation/bloc/auth_bloc.dart';
 import '../features/auth/presentation/bloc/auth_event.dart';
 import '../features/auth/presentation/pages/device_login_page.dart';
 import '../features/auth/presentation/pages/employee_login_page.dart';
+import '../features/kasir/presentation/bloc/kasir_bloc.dart';
+import '../features/kasir/presentation/bloc/kasir_event.dart';
+import '../features/kasir/presentation/screens/kasir_dashboard.dart';
 import '../features/kitchen/presentation/bloc/kitchen_bloc.dart';
 import '../features/kitchen/presentation/pages/kitchen_display_page.dart';
+import '../features/pelayan/presentation/bloc/pelayan_bloc.dart';
+import '../features/pelayan/presentation/bloc/pelayan_event.dart';
+import '../features/pelayan/presentation/screens/pelayan_dashboard.dart';
+import '../features/stok/presentation/bloc/stock_bloc.dart';
+import '../features/stok/presentation/bloc/stock_event.dart';
+import '../features/stok/presentation/screens/stok_dashboard.dart';
 import 'injection.dart';
 
 class AppRoutes {
@@ -69,32 +78,26 @@ class AppRoutes {
         );
 
       case kasirDashboard:
-        // TODO: Implement kasir dashboard
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(
-              child: Text('Kasir Dashboard'),
-            ),
+          builder: (_) => BlocProvider(
+            create: (context) => sl<KasirBloc>()..add(LoadPendingPayments()),
+            child: const KasirDashboard(),
           ),
         );
 
       case pelayanDashboard:
-        // TODO: Implement pelayan dashboard
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(
-              child: Text('Pelayan Dashboard'),
-            ),
+          builder: (_) => BlocProvider(
+            create: (context) => sl<PelayanBloc>()..add(WatchTables()),
+            child: const PelayanDashboard(),
           ),
         );
 
       case stokDashboard:
-        // TODO: Implement stok dashboard
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(
-              child: Text('Stok Dashboard'),
-            ),
+          builder: (_) => BlocProvider(
+            create: (context) => sl<StockBloc>()..add(LoadStockItems()),
+            child: const StokDashboard(),
           ),
         );
 

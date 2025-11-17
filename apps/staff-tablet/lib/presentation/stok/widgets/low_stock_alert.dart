@@ -1,1 +1,0 @@
-// Low stock alert widget

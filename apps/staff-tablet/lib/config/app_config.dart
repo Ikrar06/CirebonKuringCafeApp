@@ -2,15 +2,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppConfig {
   // Supabase configuration
-  static const String supabaseUrl = String.fromEnvironment(
-    'SUPABASE_URL',
-    defaultValue: 'https://your-project.supabase.co',
-  );
+  static const String supabaseUrl = 'https://gxlplxfjssxdjljtbonb.supabase.co';
 
-  static const String supabaseAnonKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
-    defaultValue: '',
-  );
+  static const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4bHBseGZqc3N4ZGpsanRib25iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTczODE0OTQsImV4cCI6MjA3Mjk1NzQ5NH0.peJ2Fqglc9chq1CdkLGyZXi3s-o3yeB7KWw-ifqJE_8';
 
   static String get apiBaseUrl => '$supabaseUrl/functions/v1';
 

@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'config/app_config.dart';
 import 'config/injection.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,11 @@ void main() async {
 
   // Setup dependency injection
   await setupDependencyInjection();
+
+  // Initialize notification service
+  final notificationService = sl<NotificationService>();
+  await notificationService.initialize();
+  await notificationService.requestPermission();
 
   runApp(const StaffTabletApp());
 }
