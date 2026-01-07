@@ -64,6 +64,7 @@ export default function AttendancePage() {
   const [success, setSuccess] = useState('')
   const [clockInInfo, setClockInInfo] = useState<{ isLate: boolean; lateMinutes: number } | null>(null)
   const [clockOutInfo, setClockOutInfo] = useState<any>(null)
+  const [showLocationHelp, setShowLocationHelp] = useState(false)
 
   // Lokasi cafe dari database
   const [cafeLocation, setCafeLocation] = useState({
@@ -77,21 +78,59 @@ export default function AttendancePage() {
   const CAFE_LON = cafeLocation.lng
   const MAX_DISTANCE = cafeLocation.radius
 
-  // Get current location
-  const getCurrentLocation = () => {
+  // Get current location with fallback
+  const getCurrentLocation = async (useFallback = false) => {
     setIsLoadingLocation(true)
     setLocationError('')
     setError('')
 
+    // Check if geolocation is supported
     if (!navigator.geolocation) {
       setLocationError('GPS tidak didukung oleh browser Anda')
       setIsLoadingLocation(false)
       return
     }
 
+    // Check if running on HTTPS or localhost
+    const isSecureContext = window.isSecureContext
+    if (!isSecureContext) {
+      setLocationError('Geolocation memerlukan koneksi HTTPS. Pastikan Anda mengakses melalui HTTPS atau localhost.')
+      setIsLoadingLocation(false)
+      return
+    }
+
+    // Check permission status if API is available
+    if ('permissions' in navigator) {
+      try {
+        const permission = await navigator.permissions.query({ name: 'geolocation' })
+
+        if (permission.state === 'denied') {
+          setLocationError('Akses lokasi ditolak. Silakan izinkan akses lokasi di pengaturan browser Anda.')
+          setShowLocationHelp(true)
+          setIsLoadingLocation(false)
+          return
+        }
+      } catch (permError) {
+        // Permission API not available, continue anyway
+      }
+    }
+
+    // Options: Try high accuracy first, fallback to lower accuracy
+    const options = useFallback
+      ? {
+          enableHighAccuracy: false, // Use network-based location (WiFi, IP)
+          timeout: 30000,
+          maximumAge: 30000 // Accept older cached position
+        }
+      : {
+          enableHighAccuracy: true, // Use GPS
+          timeout: 20000,
+          maximumAge: 10000
+        }
+
+    // Get current position
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log('✅ Lokasi berhasil didapat:', position.coords)
         setCurrentLocation(position.coords)
         const dist = calculateDistance(
           position.coords.latitude,
@@ -101,31 +140,36 @@ export default function AttendancePage() {
         )
         setDistance(dist)
         setIsLoadingLocation(false)
+        setShowLocationHelp(false)
       },
       (error) => {
-        console.error('❌ Geolocation error:', error)
+        // If high accuracy failed, try fallback
+        if (!useFallback && error.code === 2) {
+          getCurrentLocation(true)
+          return
+        }
+
         let errorMessage = ''
         switch (error.code) {
-          case error.PERMISSION_DENIED:
+          case 1: // PERMISSION_DENIED
             errorMessage = 'Akses lokasi ditolak. Silakan izinkan akses lokasi di pengaturan browser Anda.'
             break
-          case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Informasi lokasi tidak tersedia. Pastikan GPS aktif dan Anda tidak menggunakan VPN.'
+          case 2: // POSITION_UNAVAILABLE
+            errorMessage = useFallback
+              ? 'Lokasi tidak dapat ditemukan. Pastikan GPS aktif dan koneksi internet tersedia.'
+              : 'GPS tidak tersedia, mencoba metode alternatif...'
             break
-          case error.TIMEOUT:
+          case 3: // TIMEOUT
             errorMessage = 'Timeout mendapatkan lokasi. Coba lagi dalam beberapa saat.'
             break
           default:
-            errorMessage = 'Gagal mendapatkan lokasi. Pastikan GPS aktif dan koneksi internet stabil.'
+            errorMessage = `Gagal mendapatkan lokasi (Error ${error.code}).`
         }
         setLocationError(errorMessage)
+        setShowLocationHelp(error.code === 2)
         setIsLoadingLocation(false)
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000, // Increase timeout to 15 seconds
-        maximumAge: 0
-      }
+      options
     )
   }
 
@@ -145,7 +189,7 @@ export default function AttendancePage() {
           }
         }
       } catch (err) {
-        console.error('Error fetching cafe location:', err)
+        // Silent error handling
       } finally {
         setIsLoadingCafeLocation(false)
       }
@@ -171,7 +215,7 @@ export default function AttendancePage() {
           setTodayAttendance(data.attendance)
         }
       } catch (err) {
-        console.error('Error fetching attendance:', err)
+        // Silent error handling
       }
     }
 
@@ -193,12 +237,6 @@ export default function AttendancePage() {
         cafeLocation.lng
       )
       setDistance(dist)
-      console.log('🔄 Distance recalculated:', {
-        from: { lat: currentLocation.latitude, lng: currentLocation.longitude },
-        to: { lat: cafeLocation.lat, lng: cafeLocation.lng },
-        distance: dist,
-        maxDistance: cafeLocation.radius
-      })
     }
   }, [cafeLocation, currentLocation, isLoadingCafeLocation])
 
@@ -350,7 +388,7 @@ export default function AttendancePage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Status Lokasi</h2>
             <button
-              onClick={getCurrentLocation}
+              onClick={() => getCurrentLocation()}
               disabled={isLoadingLocation}
               className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg disabled:opacity-50"
             >
@@ -369,12 +407,32 @@ export default function AttendancePage() {
           </div>
 
           {locationError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3 mb-4">
-              <XCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-red-800">Error</p>
-                <p className="text-sm text-red-700 mt-1">{locationError}</p>
+            <div className="space-y-3 mb-4">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
+                <XCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-red-800">Error</p>
+                  <p className="text-sm text-red-700 mt-1">{locationError}</p>
+                </div>
               </div>
+
+              {showLocationHelp && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-start space-x-3">
+                    <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-blue-800 mb-2">Cara Mengaktifkan GPS:</p>
+                      <ul className="text-xs text-blue-700 space-y-1 list-disc list-inside">
+                        <li>Pastikan GPS/Location Services aktif di pengaturan HP</li>
+                        <li>Pastikan koneksi internet (WiFi/Data) tersedia</li>
+                        <li>Izinkan akses lokasi untuk browser saat diminta</li>
+                        <li>Jika menggunakan browser, coba reload halaman ini</li>
+                      </ul>
+                      <p className="text-xs text-blue-600 mt-2">Setelah mengaktifkan, klik tombol "Refresh Lokasi" di atas.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
