@@ -64,8 +64,7 @@ export default function ThankYouPage() {
         throw new Error('Order not found')
       }
 
-      // The API response has nested structure: { data: { data: actualOrderData } }
-      const order = orderResponse.data.data || orderResponse.data
+      const order = orderResponse.data
       const orderNumber = orderId!.slice(-8).toUpperCase()
 
 
@@ -73,7 +72,7 @@ export default function ThankYouPage() {
         id: order.id,
         orderNumber,
         customerName: order.customer_name || 'Customer',
-        tableNumber: order.tables?.table_number || table?.table_number || tableId,
+        tableNumber: table?.table_number || tableId || '',
         totalAmount: order.total_amount || 0,
         estimatedTime: order.created_at ?
           new Date(new Date(order.created_at).getTime() + 30 * 60 * 1000).toLocaleTimeString('id-ID', {
@@ -151,7 +150,7 @@ export default function ThankYouPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Success Header */}
-      <div className="bg-gradient-to-b from-green-50 to-white pt-12 pb-8">
+      <div className="bg-gradient-to-b from-green-50 to-green-100 pt-12 pb-8">
         <div className="text-center px-4">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="h-12 w-12 text-green-600" />
