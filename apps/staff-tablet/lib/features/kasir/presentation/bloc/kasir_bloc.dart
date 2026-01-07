@@ -89,7 +89,19 @@ class KasirBloc extends Bloc<KasirEvent, KasirState> {
 
     result.fold(
       (failure) => emit(KasirError(failure.message)),
-      (payment) => emit(const KasirOperationSuccess('Pembayaran berhasil diverifikasi')),
+      (payment) {
+        // Don't change the state - the realtime subscription will update automatically
+        // Just emit a success message that the listener will catch
+        if (state is KasirLoaded) {
+          final currentState = state as KasirLoaded;
+          emit(currentState.copyWith()); // Emit the same state to trigger listener
+          emit(const KasirOperationSuccess('Pembayaran berhasil diverifikasi'));
+          // Immediately emit back to loaded state so UI doesn't disappear
+          emit(currentState);
+        } else {
+          emit(const KasirOperationSuccess('Pembayaran berhasil diverifikasi'));
+        }
+      },
     );
   }
 

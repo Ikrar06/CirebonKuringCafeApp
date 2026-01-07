@@ -108,24 +108,56 @@ class KasirRemoteDataSourceImpl implements KasirRemoteDataSource {
 
   @override
   Future<PaymentModel> verifyPayment(String paymentId, String employeeId) async {
+    // Payment data is stored in orders table columns, not a separate payments table
+    // paymentId is actually the order ID since we're using order ID as payment ID
+
+    final now = DateTime.now().toIso8601String();
+
+    // Build update data - only include employee ID if it's a valid UUID (not 'system')
+    final updateData = <String, dynamic>{
+      'payment_status': 'verified',
+      'payment_verified_at': now,
+      'status': 'completed', // Change order status from pending_payment to completed
+      'completed_at': now, // Mark as completed
+      'updated_at': now,
+    };
+
+    // Only add employee ID if it's not 'system' (which means there's an actual employee logged in)
+    if (employeeId != 'system') {
+      updateData['payment_verified_by'] = employeeId;
+    }
+
     final response = await supabaseClient.execute(
-      query: () => supabaseClient.from('payments')
-          .update({
-            'status': 'verified',
-            'verified_by': employeeId,
-            'verified_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
-          })
+      query: () => supabaseClient.from('orders')
+          .update(updateData)
           .eq('id', paymentId)
           .select('''
             *,
-            order:orders!payments_order_id_fkey(order_number),
-            verified_by_employee:employees!payments_verified_by_fkey(name)
+            table:tables!orders_table_id_fkey(table_number),
+            items:order_items(*, menu_item:menu_items(*))
           ''')
           .single(),
     );
 
-    return PaymentModel.fromJson(response);
+    // Create PaymentModel from orders table response
+    final data = response as Map<String, dynamic>;
+    return PaymentModel(
+      id: data['id'] ?? '',
+      orderId: data['id'] ?? '',
+      orderNumber: data['order_number'] ?? '',
+      amount: double.tryParse(data['total_amount']?.toString() ?? '0') ?? 0.0,
+      paymentMethod: data['payment_method'] ?? 'cash',
+      status: data['payment_status'] ?? 'verified',
+      proofImageUrl: data['payment_proof_url'],
+      verifiedBy: data['payment_verified_by'],
+      verifiedByName: null,
+      verifiedAt: data['payment_verified_at'] != null
+          ? DateTime.parse(data['payment_verified_at'])
+          : null,
+      notes: null,
+      createdAt: DateTime.parse(data['created_at']),
+      updatedAt: DateTime.parse(data['updated_at']),
+    );
   }
 
   @override

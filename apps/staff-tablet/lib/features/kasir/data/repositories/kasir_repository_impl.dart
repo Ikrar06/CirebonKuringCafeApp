@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
+import '../../../../core/utils/auth_helper.dart';
 import '../../../kitchen/data/models/order_model.dart';
 import '../../domain/entities/cash_summary_entity.dart';
 import '../../domain/entities/order_with_payment_entity.dart';
@@ -71,7 +72,8 @@ class KasirRepositoryImpl implements KasirRepository {
   Future<Either<Failure, PaymentEntity>> verifyPayment(String paymentId) async {
     try {
       // Get employee ID from auth
-      final payment = await remoteDataSource.verifyPayment(paymentId, 'emp_id');
+      final employeeId = await AuthHelper.getCurrentEmployeeId();
+      final payment = await remoteDataSource.verifyPayment(paymentId, employeeId);
       return Right(payment);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -119,9 +121,32 @@ class KasirRepositoryImpl implements KasirRepository {
   OrderWithPaymentEntity _mapToOrderWithPayment(Map<String, dynamic> data) {
     final order = OrderModel.fromJson(data);
     PaymentEntity? payment;
+
+    // Check if there's a separate payments table join
     if (data['payment'] != null && data['payment'] is List && (data['payment'] as List).isNotEmpty) {
       payment = PaymentModel.fromJson((data['payment'] as List).first as Map<String, dynamic>);
     }
+    // Otherwise, create payment from order columns if payment data exists
+    else if (data['payment_method'] != null && data['payment_status'] != null) {
+      payment = PaymentEntity(
+        id: data['id'] ?? '', // Use order ID as payment ID for now
+        orderId: data['id'] ?? '',
+        orderNumber: data['order_number'] ?? '',
+        amount: double.tryParse(data['total_amount']?.toString() ?? '0') ?? 0.0,
+        paymentMethod: data['payment_method'] ?? 'cash',
+        status: data['payment_status'] ?? 'pending',
+        proofImageUrl: data['payment_proof_url'],
+        verifiedBy: data['payment_verified_by'],
+        verifiedByName: null, // Not available in orders table
+        verifiedAt: data['payment_verified_at'] != null
+            ? DateTime.parse(data['payment_verified_at'])
+            : null,
+        notes: null,
+        createdAt: DateTime.parse(data['created_at']),
+        updatedAt: DateTime.parse(data['updated_at']),
+      );
+    }
+
     return OrderWithPaymentEntity(order: order, payment: payment);
   }
 }

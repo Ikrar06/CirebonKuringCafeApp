@@ -8,6 +8,7 @@ import '../bloc/kasir_state.dart';
 import '../widgets/order_payment_card.dart';
 import 'payment_verification.dart';
 import 'cash_reconciliation.dart';
+import 'live_orders.dart';
 
 class KasirDashboard extends StatefulWidget {
   const KasirDashboard({super.key});
@@ -118,8 +119,8 @@ class _KasirDashboardState extends State<KasirDashboard> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: context.read<KasirBloc>(),
+                        builder: (_) => BlocProvider.value(
+                          value: kasirBloc,
                           child: const PaymentVerificationScreen(),
                         ),
                       ),
@@ -275,7 +276,15 @@ class _KasirDashboardState extends State<KasirDashboard> {
                 label: 'Live\nOrders',
                 color: Colors.green,
                 onTap: () {
-                  // Navigate to live orders
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider.value(
+                        value: kasirBloc,
+                        child: const LiveOrdersScreen(),
+                      ),
+                    ),
+                  );
                 },
               ),
             ),
@@ -381,9 +390,12 @@ class _KasirDashboardState extends State<KasirDashboard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildOrderStatusChip('Sedang Dimasak', preparing, Colors.orange),
-                _buildOrderStatusChip('Siap Disajikan', ready, Colors.green),
-                _buildOrderStatusChip('Pending Bayar', pending, Colors.red),
+                if (preparing > 0)
+                  _buildOrderStatusChip('Sedang Dimasak', preparing, Colors.orange),
+                if (ready > 0)
+                  _buildOrderStatusChip('Siap Disajikan', ready, Colors.green),
+                if (pending > 0)
+                  _buildOrderStatusChip('Pending Bayar', pending, Colors.red),
               ],
             ),
           ],
