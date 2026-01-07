@@ -81,7 +81,7 @@ export default function ProfilePage() {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
           <div className="flex items-start justify-between">
             <div className="flex items-start space-x-4">
               <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">

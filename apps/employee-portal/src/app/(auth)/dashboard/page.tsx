@@ -137,7 +137,7 @@ export default function DashboardPage() {
       name: 'Slip Gaji',
       description: 'Riwayat gaji Anda',
       icon: FileText,
-      color: 'bg-indigo-50 text-indigo-600',
+      color: 'bg-purple-50 text-purple-600',
       href: '/payslip'
     },
     {
@@ -162,7 +162,7 @@ export default function DashboardPage() {
     <DashboardLayout>
       <div className="p-6 space-y-6">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
           <h1 className="text-2xl font-bold">
             Selamat Datang, {employee?.full_name}!
           </h1>
