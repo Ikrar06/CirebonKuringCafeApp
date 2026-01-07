@@ -69,7 +69,6 @@ const settingSections: SettingSection[] = [
     icon: Bell,
     href: '/settings/telegram',
     color: 'purple',
-    badge: 'New'
   },
   {
     id: 'printers',
