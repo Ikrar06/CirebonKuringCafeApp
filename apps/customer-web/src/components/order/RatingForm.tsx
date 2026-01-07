@@ -244,8 +244,8 @@ export function RatingForm({
           <span>Rekomendasi</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-gradient-to-r from-yellow-500 to-orange-500 h-2 rounded-full transition-all duration-300"
+          <div
+            className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-2 rounded-full transition-all duration-300"
             style={{ width: `${((currentStep + 1) / 3) * 100}%` }}
           />
         </div>
