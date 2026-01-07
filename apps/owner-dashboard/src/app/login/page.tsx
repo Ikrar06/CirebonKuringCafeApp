@@ -175,7 +175,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading || !email.trim() || !password.trim()}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg"
             >
               {isLoading ? (
                 <>
