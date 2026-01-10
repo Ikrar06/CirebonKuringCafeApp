@@ -47,6 +47,7 @@ import '../features/kasir/data/repositories/kasir_repository_impl.dart';
 import '../features/kasir/domain/repositories/kasir_repository.dart';
 import '../features/kasir/domain/usecases/create_cash_summary_usecase.dart';
 import '../features/kasir/domain/usecases/get_pending_payments_usecase.dart';
+import '../features/kasir/domain/usecases/get_today_orders_usecase.dart';
 import '../features/kasir/domain/usecases/verify_payment_usecase.dart';
 import '../features/kasir/domain/usecases/watch_orders_usecase.dart' as kasir_watch;
 import '../features/kasir/presentation/bloc/kasir_bloc.dart';
@@ -179,6 +180,7 @@ Future<void> setupDependencyInjection() async {
   sl.registerFactory(
     () => KasirBloc(
       getPendingPaymentsUseCase: sl(),
+      getTodayOrdersUseCase: sl(),
       verifyPaymentUseCase: sl(),
       watchOrdersUseCase: sl(),
       createCashSummaryUseCase: sl(),
@@ -188,6 +190,7 @@ Future<void> setupDependencyInjection() async {
 
   // Use cases
   sl.registerLazySingleton(() => GetPendingPaymentsUseCase(sl()));
+  sl.registerLazySingleton(() => GetTodayOrdersUseCase(sl()));
   sl.registerLazySingleton(() => VerifyPaymentUseCase(sl()));
   sl.registerLazySingleton(() => kasir_watch.WatchOrdersUseCase(sl()));
   sl.registerLazySingleton(() => CreateCashSummaryUseCase(sl()));

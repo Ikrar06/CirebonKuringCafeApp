@@ -27,7 +27,7 @@ class KasirRemoteDataSourceImpl implements KasirRemoteDataSource {
 
   @override
   Future<List<Map<String, dynamic>>> getPendingPayments() async {
-    final response = await supabaseClient.execute(
+    final response = await supabaseClient.execute<List<dynamic>>(
       query: () => supabaseClient.from('orders')
           .select('''
             *,
@@ -38,7 +38,7 @@ class KasirRemoteDataSourceImpl implements KasirRemoteDataSource {
           .order('created_at', ascending: false),
     );
 
-    return (response as List).cast<Map<String, dynamic>>();
+    return response.cast<Map<String, dynamic>>();
   }
 
   @override
@@ -46,7 +46,7 @@ class KasirRemoteDataSourceImpl implements KasirRemoteDataSource {
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
 
-    final response = await supabaseClient.execute(
+    final response = await supabaseClient.execute<List<dynamic>>(
       query: () => supabaseClient.from('orders')
           .select('''
             *,
@@ -57,7 +57,7 @@ class KasirRemoteDataSourceImpl implements KasirRemoteDataSource {
           .order('created_at', ascending: false),
     );
 
-    return (response as List).cast<Map<String, dynamic>>();
+    return response.cast<Map<String, dynamic>>();
   }
 
   @override
@@ -117,8 +117,8 @@ class KasirRemoteDataSourceImpl implements KasirRemoteDataSource {
     final updateData = <String, dynamic>{
       'payment_status': 'verified',
       'payment_verified_at': now,
-      'status': 'completed', // Change order status from pending_payment to completed
-      'completed_at': now, // Mark as completed
+      'status': 'confirmed', // Change order status from pending_payment to confirmed (to be processed by kitchen)
+      'confirmed_at': now, // Mark as confirmed
       'updated_at': now,
     };
 
@@ -127,7 +127,7 @@ class KasirRemoteDataSourceImpl implements KasirRemoteDataSource {
       updateData['payment_verified_by'] = employeeId;
     }
 
-    final response = await supabaseClient.execute(
+    final data = await supabaseClient.execute<Map<String, dynamic>>(
       query: () => supabaseClient.from('orders')
           .update(updateData)
           .eq('id', paymentId)
@@ -138,9 +138,6 @@ class KasirRemoteDataSourceImpl implements KasirRemoteDataSource {
           ''')
           .single(),
     );
-
-    // Create PaymentModel from orders table response
-    final data = response as Map<String, dynamic>;
     return PaymentModel(
       id: data['id'] ?? '',
       orderId: data['id'] ?? '',
@@ -165,7 +162,7 @@ class KasirRemoteDataSourceImpl implements KasirRemoteDataSource {
     final data = summary.toJson();
     data.remove('id');
 
-    final response = await supabaseClient.execute(
+    final response = await supabaseClient.execute<Map<String, dynamic>>(
       query: () => supabaseClient.from('cash_summaries')
           .insert(data)
           .select('*, employee:employees!cash_summaries_employee_id_fkey(name)')

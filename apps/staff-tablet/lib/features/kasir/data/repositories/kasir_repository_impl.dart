@@ -119,34 +119,44 @@ class KasirRepositoryImpl implements KasirRepository {
   }
 
   OrderWithPaymentEntity _mapToOrderWithPayment(Map<String, dynamic> data) {
-    final order = OrderModel.fromJson(data);
-    PaymentEntity? payment;
+    try {
+      final order = OrderModel.fromJson(data);
+      PaymentEntity? payment;
 
-    // Check if there's a separate payments table join
-    if (data['payment'] != null && data['payment'] is List && (data['payment'] as List).isNotEmpty) {
-      payment = PaymentModel.fromJson((data['payment'] as List).first as Map<String, dynamic>);
-    }
-    // Otherwise, create payment from order columns if payment data exists
-    else if (data['payment_method'] != null && data['payment_status'] != null) {
-      payment = PaymentEntity(
-        id: data['id'] ?? '', // Use order ID as payment ID for now
-        orderId: data['id'] ?? '',
-        orderNumber: data['order_number'] ?? '',
-        amount: double.tryParse(data['total_amount']?.toString() ?? '0') ?? 0.0,
-        paymentMethod: data['payment_method'] ?? 'cash',
-        status: data['payment_status'] ?? 'pending',
-        proofImageUrl: data['payment_proof_url'],
-        verifiedBy: data['payment_verified_by'],
-        verifiedByName: null, // Not available in orders table
-        verifiedAt: data['payment_verified_at'] != null
-            ? DateTime.parse(data['payment_verified_at'])
-            : null,
-        notes: null,
-        createdAt: DateTime.parse(data['created_at']),
-        updatedAt: DateTime.parse(data['updated_at']),
-      );
-    }
+      // Check if there's a separate payments table join
+      if (data['payment'] != null && data['payment'] is List && (data['payment'] as List).isNotEmpty) {
+        final paymentData = (data['payment'] as List).first;
+        if (paymentData != null && paymentData is Map<String, dynamic>) {
+          payment = PaymentModel.fromJson(paymentData);
+        }
+      }
+      // Otherwise, create payment from order columns if payment data exists
+      else if (data['payment_method'] != null && data['payment_status'] != null) {
+        payment = PaymentEntity(
+          id: data['id'] ?? '', // Use order ID as payment ID for now
+          orderId: data['id'] ?? '',
+          orderNumber: data['order_number'] ?? '',
+          amount: double.tryParse(data['total_amount']?.toString() ?? '0') ?? 0.0,
+          paymentMethod: data['payment_method'] ?? 'cash',
+          status: data['payment_status'] ?? 'pending',
+          proofImageUrl: data['payment_proof_url'],
+          verifiedBy: data['payment_verified_by'],
+          verifiedByName: null, // Not available in orders table
+          verifiedAt: data['payment_verified_at'] != null
+              ? DateTime.parse(data['payment_verified_at'])
+              : null,
+          notes: null,
+          createdAt: DateTime.parse(data['created_at']),
+          updatedAt: DateTime.parse(data['updated_at']),
+        );
+      }
 
-    return OrderWithPaymentEntity(order: order, payment: payment);
+      return OrderWithPaymentEntity(order: order, payment: payment);
+    } catch (e, stackTrace) {
+      print('❌ Error mapping order: $e');
+      print('Data: $data');
+      print('Stack trace: $stackTrace');
+      rethrow;
+    }
   }
 }
