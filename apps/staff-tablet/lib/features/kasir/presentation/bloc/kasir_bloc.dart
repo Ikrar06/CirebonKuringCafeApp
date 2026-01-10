@@ -7,6 +7,7 @@ import '../../domain/entities/order_with_payment_entity.dart';
 import '../../../../services/notification_service.dart';
 import '../../domain/usecases/create_cash_summary_usecase.dart';
 import '../../domain/usecases/get_pending_payments_usecase.dart';
+import '../../domain/usecases/get_today_orders_usecase.dart';
 import '../../domain/usecases/verify_payment_usecase.dart';
 import '../../domain/usecases/watch_orders_usecase.dart';
 import 'kasir_event.dart';
@@ -14,6 +15,7 @@ import 'kasir_state.dart';
 
 class KasirBloc extends Bloc<KasirEvent, KasirState> {
   final GetPendingPaymentsUseCase getPendingPaymentsUseCase;
+  final GetTodayOrdersUseCase getTodayOrdersUseCase;
   final VerifyPaymentUseCase verifyPaymentUseCase;
   final WatchOrdersUseCase watchOrdersUseCase;
   final CreateCashSummaryUseCase createCashSummaryUseCase;
@@ -21,12 +23,14 @@ class KasirBloc extends Bloc<KasirEvent, KasirState> {
 
   KasirBloc({
     required this.getPendingPaymentsUseCase,
+    required this.getTodayOrdersUseCase,
     required this.verifyPaymentUseCase,
     required this.watchOrdersUseCase,
     required this.createCashSummaryUseCase,
     required this.notificationService,
   }) : super(KasirInitial()) {
     on<WatchOrders>(_onWatchOrders);
+    on<RefreshOrders>(_onRefreshOrders);
     on<LoadPendingPayments>(_onLoadPendingPayments);
     on<VerifyPayment>(_onVerifyPayment);
     on<CreateCashSummary>(_onCreateCashSummary);
@@ -70,6 +74,34 @@ class KasirBloc extends Bloc<KasirEvent, KasirState> {
         );
       },
       onError: (error, stackTrace) => KasirError(error.toString()),
+    );
+  }
+
+  Future<void> _onRefreshOrders(RefreshOrders event, Emitter<KasirState> emit) async {
+    print('🔄 KasirBloc: RefreshOrders event triggered (manual refresh)');
+
+    final result = await getTodayOrdersUseCase(const NoParams());
+
+    result.fold(
+      (failure) {
+        print('❌ KasirBloc: Refresh error - ${failure.message}');
+        emit(KasirError(failure.message));
+      },
+      (orders) {
+        print('✅ KasirBloc: Refreshed ${orders.length} orders');
+        // Filter pending payments
+        final pendingPayments = orders.where((o) => o.isPendingPayment).toList();
+        print('💰 KasirBloc: ${pendingPayments.length} pending payments');
+
+        if (state is KasirLoaded) {
+          emit((state as KasirLoaded).copyWith(
+            orders: orders,
+            pendingPayments: pendingPayments,
+          ));
+        } else {
+          emit(KasirLoaded(orders: orders, pendingPayments: pendingPayments));
+        }
+      },
     );
   }
 

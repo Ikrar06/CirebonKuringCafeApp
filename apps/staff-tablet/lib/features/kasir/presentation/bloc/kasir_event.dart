@@ -11,6 +11,8 @@ abstract class KasirEvent extends Equatable {
 
 class WatchOrders extends KasirEvent {}
 
+class RefreshOrders extends KasirEvent {}
+
 class LoadPendingPayments extends KasirEvent {}
 
 class VerifyPayment extends KasirEvent {

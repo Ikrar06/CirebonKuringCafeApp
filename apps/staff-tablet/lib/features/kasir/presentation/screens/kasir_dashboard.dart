@@ -35,7 +35,7 @@ class _KasirDashboardState extends State<KasirDashboard> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              context.read<KasirBloc>().add(WatchOrders());
+              context.read<KasirBloc>().add(RefreshOrders());
             },
             tooltip: 'Refresh',
           ),
@@ -299,7 +299,10 @@ class _KasirDashboardState extends State<KasirDashboard> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const CashReconciliationScreen(),
+                      builder: (_) => BlocProvider.value(
+                        value: kasirBloc,
+                        child: const CashReconciliationScreen(),
+                      ),
                     ),
                   );
                 },
