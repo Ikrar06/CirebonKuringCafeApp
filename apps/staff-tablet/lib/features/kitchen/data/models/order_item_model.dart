@@ -32,11 +32,32 @@ class OrderItemModel extends OrderItemEntity {
       }
     }
 
+    // Parse menu_item - could be null if menu item was deleted
+    MenuItemModel menuItem;
+    if (json['menu_item'] != null && json['menu_item'] is Map<String, dynamic>) {
+      menuItem = MenuItemModel.fromJson(json['menu_item'] as Map<String, dynamic>);
+    } else {
+      // Fallback: create a basic menu item from order item data
+      final itemName = json['item_name'] as String;
+      menuItem = MenuItemModel(
+        id: json['menu_item_id'] as String,
+        name: itemName,
+        slug: itemName.toLowerCase().replaceAll(' ', '-'),
+        description: 'Item tidak lagi tersedia',
+        basePrice: (json['item_price'] as num).toDouble(),
+        isAvailable: false,
+        estimatedPrepTime: 15,
+        categoryId: null,
+        imageUrl: null,
+        thumbnailUrl: null,
+      );
+    }
+
     return OrderItemModel(
       id: json['id'] as String,
       orderId: json['order_id'] as String,
       menuItemId: json['menu_item_id'] as String,
-      menuItem: MenuItemModel.fromJson(json['menu_item'] as Map<String, dynamic>),
+      menuItem: menuItem,
       itemName: json['item_name'] as String,
       itemPrice: (json['item_price'] as num).toDouble(),
       quantity: json['quantity'] as int,

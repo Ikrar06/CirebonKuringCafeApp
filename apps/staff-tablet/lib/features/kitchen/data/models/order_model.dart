@@ -33,6 +33,7 @@ class OrderModel extends OrderEntity {
       tableId: json['table_id'] as String,
       tableNumber: tableNum,
       items: (json['items'] as List? ?? [])
+          .where((item) => item != null && item is Map<String, dynamic>)
           .map((item) => OrderItemModel.fromJson(item as Map<String, dynamic>))
           .toList(),
       status: json['status'] as String,
